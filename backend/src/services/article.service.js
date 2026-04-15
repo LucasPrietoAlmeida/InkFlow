@@ -21,18 +21,38 @@ const createArticle = async (data, userId) => {
 
     const article = await prisma.article.create({
         data: {
-        title,
-        content,
-        intro,
-        coverImage,
-        slug,
-        authorId: userId,
+            title,
+            content,
+            intro,
+            coverImage,
+            slug,
+            authorId: userId,
         },
     });
 
     return article;
 };
 
+const getArticles = async () => {
+    const articles = await prisma.article.findMany({
+        orderBy: {
+        createdAt: "desc",
+        },
+        include: {
+        author: {
+            select: {
+            id: true,
+            username: true,
+            email: true,
+            },
+        },
+        },
+    });
+
+    return articles;
+};
+
 module.exports = {
     createArticle,
+    getArticles,
 };

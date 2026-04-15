@@ -17,6 +17,21 @@ const createArticle = async (req, res) => {
     }
 };
 
+const getArticles = async (req, res) => {
+    try {
+        const articles = await articleService.getArticles();
+
+        res.status(200).json(articles);
+    } catch (error) {
+        console.error("Get articles error:", error.message);
+
+        res.status(500).json({
+        error: "Error fetching articles",
+        });
+    }
+};
+
 module.exports = {
     createArticle,
+    getArticles,
 };
