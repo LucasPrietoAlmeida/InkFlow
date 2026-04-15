@@ -2,12 +2,15 @@ const express = require("express");
 const cors = require("cors");
 const prisma = require("./config/prisma");
 
+const authRoutes = require("./routes/auth.routes");
+
 const app = express();
 
+// Middlewares
 app.use(cors());
 app.use(express.json());
 
-
+// Health check
 app.get("/health", (req, res) => {
     res.json({
         status: "ok",
@@ -16,6 +19,7 @@ app.get("/health", (req, res) => {
     });
 });
 
+// Test DB connection
 app.get("/test-db", async (req, res) => {
     try {
         const users = await prisma.user.findMany();
@@ -27,5 +31,8 @@ app.get("/test-db", async (req, res) => {
         });
     }
 });
+
+// Auth routes
+app.use("/api/auth", authRoutes);
 
 module.exports = app;
