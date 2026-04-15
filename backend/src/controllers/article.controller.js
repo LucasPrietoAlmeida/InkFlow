@@ -31,7 +31,20 @@ const getArticles = async (req, res) => {
     }
 };
 
+const getArticleBySlug = async (req, res) => {
+    try {
+        const { slug } = req.params;
+
+        const article = await articleService.getArticleBySlug(slug);
+
+        res.json(article);
+    } catch (error) {
+        res.status(404).json({ error: error.message });
+    }
+};
+
 module.exports = {
     createArticle,
     getArticles,
+    getArticleBySlug,
 };

@@ -52,7 +52,29 @@ const getArticles = async () => {
     return articles;
 };
 
+const getArticleBySlug = async (slug) => {
+    const article = await prisma.article.findUnique({
+        where: { slug },
+        include: {
+        author: {
+            select: {
+            id: true,
+            username: true,
+            email: true,
+            },
+        },
+        },
+    });
+
+    if (!article) {
+        throw new Error("Article not found");
+    }
+
+    return article;
+};
+
 module.exports = {
     createArticle,
     getArticles,
+    getArticleBySlug,
 };
