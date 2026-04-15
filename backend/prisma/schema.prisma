@@ -13,4 +13,19 @@ model User {
   username  String   @unique
   password  String
   createdAt DateTime @default(now())
+
+  articles  Article[]
+}
+
+model Article {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  content     String
+  intro       String?
+  coverImage  String?
+  createdAt   DateTime @default(now())
+
+  authorId String
+  author   User @relation(fields: [authorId], references: [id])
 }
