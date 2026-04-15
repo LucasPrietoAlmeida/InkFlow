@@ -3,6 +3,7 @@ const cors = require("cors");
 const prisma = require("./config/prisma");
 
 const authRoutes = require("./routes/auth.routes");
+const authMiddleware = require("./middlewares/auth.middleware");
 
 const app = express();
 
@@ -34,5 +35,13 @@ app.get("/test-db", async (req, res) => {
 
 // Auth routes
 app.use("/api/auth", authRoutes);
+
+// Test Ruta protegida 
+app.get("/api/private", authMiddleware, (req, res) => {
+    res.json({
+        message: "Protected route",
+        user: req.user,
+    });
+});
 
 module.exports = app;
