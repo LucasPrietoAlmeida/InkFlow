@@ -9,37 +9,52 @@ const createArticle = async (req, res) => {
 
         res.status(201).json(article);
     } catch (error) {
-        console.error("Create article error:", error.message);
-
-        res.status(400).json({
-        error: error.message,
-        });
+        res.status(400).json({ error: error.message });
     }
 };
 
 const getArticles = async (req, res) => {
     try {
         const articles = await articleService.getArticles();
-
-        res.status(200).json(articles);
+        res.json(articles);
     } catch (error) {
-        console.error("Get articles error:", error.message);
-
-        res.status(500).json({
-        error: "Error fetching articles",
-        });
+        res.status(500).json({ error: "Error fetching articles" });
     }
 };
 
 const getArticleBySlug = async (req, res) => {
     try {
-        const { slug } = req.params;
-
-        const article = await articleService.getArticleBySlug(slug);
-
+        const article = await articleService.getArticleBySlug(req.params.slug);
         res.json(article);
     } catch (error) {
         res.status(404).json({ error: error.message });
+    }
+};
+
+const updateArticle = async (req, res) => {
+    try {
+        const article = await articleService.updateArticle(
+        req.params.id,
+        req.body,
+        req.user.userId
+        );
+
+        res.json(article);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+const deleteArticle = async (req, res) => {
+    try {
+        const result = await articleService.deleteArticle(
+        req.params.id,
+        req.user.userId
+        );
+
+        res.json(result);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
     }
 };
 
@@ -47,4 +62,6 @@ module.exports = {
     createArticle,
     getArticles,
     getArticleBySlug,
+    updateArticle,
+    deleteArticle,
 };

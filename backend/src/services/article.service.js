@@ -19,37 +19,30 @@ const createArticle = async (data, userId) => {
         slug = `${slug}-${Date.now()}`;
     }
 
-    const article = await prisma.article.create({
+    return prisma.article.create({
         data: {
-            title,
-            content,
-            intro,
-            coverImage,
-            slug,
-            authorId: userId,
+        title,
+        content,
+        intro,
+        coverImage,
+        slug,
+        authorId: userId,
         },
     });
-
-    return article;
 };
 
 const getArticles = async () => {
-    const articles = await prisma.article.findMany({
-        orderBy: {
-        createdAt: "desc",
-        },
+    return prisma.article.findMany({
+        orderBy: { createdAt: "desc" },
         include: {
         author: {
             select: {
             id: true,
             username: true,
-            email: true,
             },
         },
         },
     });
-
-    return articles;
 };
 
 const getArticleBySlug = async (slug) => {
@@ -73,8 +66,66 @@ const getArticleBySlug = async (slug) => {
     return article;
 };
 
+const updateArticle = async (id, data, userId) => {
+    const article = await prisma.article.findUnique({
+        where: { id },
+    });
+
+    if (!article) {
+        throw new Error("Article not found");
+    }
+
+    if (article.authorId !== userId) {
+        throw new Error("Unauthorized");
+    }
+
+    let updatedData = { ...data };
+
+    // Si cambia el título -> actualizar slug
+    if (data.title) {
+        let newSlug = generateSlug(data.title);
+
+        const existing = await prisma.article.findUnique({
+        where: { slug: newSlug },
+        });
+
+        if (existing && existing.id !== id) {
+        newSlug = `${newSlug}-${Date.now()}`;
+        }
+
+        updatedData.slug = newSlug;
+    }
+
+    return prisma.article.update({
+        where: { id },
+        data: updatedData,
+    });
+};
+
+const deleteArticle = async (id, userId) => {
+    const article = await prisma.article.findUnique({
+        where: { id },
+    });
+
+    if (!article) {
+        throw new Error("Article not found");
+    }
+
+    if (article.authorId !== userId) {
+        throw new Error("Unauthorized");
+    }
+
+    await prisma.article.delete({
+        where: { id },
+    });
+
+    return { message: "Article deleted" };
+};
+
 module.exports = {
     createArticle,
     getArticles,
     getArticleBySlug,
+    updateArticle,
+    deleteArticle,
 };
