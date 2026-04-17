@@ -5,6 +5,7 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import ArticleDetail from "../pages/ArticleDetail";
 import CreateArticle from "../pages/CreateArticle";
+import ProtectedRoute from "./ProtectedRoute";
 
 const AppRouter = () => {
     return (
@@ -14,7 +15,15 @@ const AppRouter = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/articles/:slug" element={<ArticleDetail />} />
-            <Route path="/create" element={<CreateArticle />} />
+
+            <Route
+            path="/create"
+            element={
+                <ProtectedRoute>
+                <CreateArticle />
+                </ProtectedRoute>
+            }
+            />
         </Routes>
         </BrowserRouter>
     );
