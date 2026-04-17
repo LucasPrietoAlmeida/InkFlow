@@ -1,9 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Home from "../pages/Home.tsx";
-import Login from "../pages/Login.tsx";
-import Register from "../pages/Register.tsx";
-import ArticleDetail from "../pages/ArticleDetail.tsx";
+import Home from "../pages/Home";
+import Login from "../pages/Login";
+import Register from "../pages/Register";
+import ArticleDetail from "../pages/ArticleDetail";
+import CreateArticle from "../pages/CreateArticle";
 
 const AppRouter = () => {
     return (
@@ -13,6 +14,7 @@ const AppRouter = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/articles/:slug" element={<ArticleDetail />} />
+            <Route path="/create" element={<CreateArticle />} />
         </Routes>
         </BrowserRouter>
     );
