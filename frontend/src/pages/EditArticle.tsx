@@ -13,8 +13,6 @@ const EditArticle = () => {
     });
 
     useEffect(() => {
-        // podrías mejorar esto trayendo por ID en backend
-        // pero para MVP usamos slug previamente cargado
     }, []);
 
     const handleChange = (
