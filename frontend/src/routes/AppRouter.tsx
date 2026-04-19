@@ -5,6 +5,7 @@ import Login from "../pages/Login";
 import Register from "../pages/Register";
 import ArticleDetail from "../pages/ArticleDetail";
 import CreateArticle from "../pages/CreateArticle";
+import EditArticle from "../pages/EditArticle";
 import ProtectedRoute from "./ProtectedRoute";
 
 const AppRouter = () => {
@@ -17,13 +18,22 @@ const AppRouter = () => {
             <Route path="/articles/:slug" element={<ArticleDetail />} />
 
             <Route
-            path="/create"
-            element={
-                <ProtectedRoute>
-                <CreateArticle />
-                </ProtectedRoute>
-            }
+                path="/create"
+                element={
+                    <ProtectedRoute>
+                        <CreateArticle />
+                    </ProtectedRoute>
+                }
             />
+
+            <Route
+                path="/edit/:id"
+                element={
+                    <ProtectedRoute>
+                        <EditArticle />
+                    </ProtectedRoute>
+                }
+                />
         </Routes>
         </BrowserRouter>
     );
