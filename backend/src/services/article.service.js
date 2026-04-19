@@ -10,7 +10,6 @@ const createArticle = async (data, userId) => {
 
     let slug = generateSlug(title);
 
-    // Evitar duplicados de slug
     const existing = await prisma.article.findUnique({
         where: { slug },
     });
@@ -29,9 +28,9 @@ const createArticle = async (data, userId) => {
         authorId: userId,
         },
     });
-};
+    };
 
-const getArticles = async () => {
+    const getArticles = async () => {
     return prisma.article.findMany({
         orderBy: { createdAt: "desc" },
         include: {
@@ -66,7 +65,19 @@ const getArticleBySlug = async (slug) => {
     return article;
 };
 
-const updateArticle = async (id, data, userId) => {
+const getArticleById = async (id) => {
+    const article = await prisma.article.findUnique({
+        where: { id },
+    });
+
+    if (!article) {
+        throw new Error("Article not found");
+    }
+
+    return article;
+    };
+
+    const updateArticle = async (id, data, userId) => {
     const article = await prisma.article.findUnique({
         where: { id },
     });
@@ -81,7 +92,6 @@ const updateArticle = async (id, data, userId) => {
 
     let updatedData = { ...data };
 
-    // Si cambia el título -> actualizar slug
     if (data.title) {
         let newSlug = generateSlug(data.title);
 
@@ -126,6 +136,7 @@ module.exports = {
     createArticle,
     getArticles,
     getArticleBySlug,
+    getArticleById,
     updateArticle,
     deleteArticle,
 };

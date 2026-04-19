@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getArticleBySlug, updateArticle } from "../services/articles";
+import { getArticleById, updateArticle } from "../services/articles";
 
 const EditArticle = () => {
     const { id } = useParams();
@@ -12,8 +12,29 @@ const EditArticle = () => {
         content: "",
     });
 
+    const [loading, setLoading] = useState(true);
+
     useEffect(() => {
-    }, []);
+        const fetchArticle = async () => {
+        try {
+            if (!id) return;
+
+            const article = await getArticleById(id);
+
+            setForm({
+            title: article.title,
+            intro: article.intro || "",
+            content: article.content,
+            });
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+        };
+
+        fetchArticle();
+    }, [id]);
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -29,6 +50,11 @@ const EditArticle = () => {
 
         if (!id) return;
 
+        if (!form.title || !form.content) {
+        alert("Title and content are required");
+        return;
+        }
+
         try {
         const article = await updateArticle(id, form);
         navigate(`/articles/${article.slug}`);
@@ -37,16 +63,35 @@ const EditArticle = () => {
         }
     };
 
+    if (loading) return <p>Cargando...</p>;
+
     return (
         <div>
         <h1>Edit Article</h1>
 
         <form onSubmit={handleSubmit}>
-            <input name="title" placeholder="Title" onChange={handleChange} />
-            <input name="intro" placeholder="Intro" onChange={handleChange} />
-            <textarea name="content" rows={10} onChange={handleChange} />
+            <input
+            name="title"
+            value={form.title}
+            onChange={handleChange}
+            placeholder="Title"
+            />
 
-            <button type="submit">Update</button>
+            <input
+            name="intro"
+            value={form.intro}
+            onChange={handleChange}
+            placeholder="Intro"
+            />
+
+            <textarea
+            name="content"
+            value={form.content}
+            onChange={handleChange}
+            rows={10}
+            />
+
+            <button type="submit">Actualizar</button>
         </form>
         </div>
     );

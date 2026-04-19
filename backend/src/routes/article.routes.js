@@ -7,6 +7,7 @@ const {
     createArticle,
     getArticles,
     getArticleBySlug,
+    getArticleById,
     updateArticle,
     deleteArticle,
 } = require("../controllers/article.controller");
@@ -17,13 +18,16 @@ router.post("/", authMiddleware, createArticle);
 // Listar artículos (público)
 router.get("/", getArticles);
 
-// Detalle artículo (público)
+// 👇 IMPORTANTE: poner antes que :slug
+router.get("/id/:id", getArticleById);
+
+// Detalle por slug
 router.get("/:slug", getArticleBySlug);
 
-// Actualizar (privado)
+// Actualizar
 router.put("/:id", authMiddleware, updateArticle);
 
-// Borrar (privado)
+// Borrar
 router.delete("/:id", authMiddleware, deleteArticle);
 
 module.exports = router;

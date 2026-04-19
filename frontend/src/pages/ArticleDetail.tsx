@@ -51,8 +51,8 @@ const ArticleDetail = () => {
         }
     };
 
-    if (loading) return <h1>Loading...</h1>;
-    if (!article) return <h1>Article not found</h1>;
+    if (loading) return <h1>Cargando...</h1>;
+    if (!article) return <h1>Articulo no encontrado</h1>;
 
     const isOwner = user?.id === article.author.id;
 
@@ -67,10 +67,10 @@ const ArticleDetail = () => {
         {isOwner && (
             <div>
             <button onClick={() => navigate(`/edit/${article.id}`)}>
-                Edit
+                Editar
             </button>
 
-            <button onClick={handleDelete}>Delete</button>
+            <button onClick={handleDelete}>Borrar</button>
             </div>
         )}
 
