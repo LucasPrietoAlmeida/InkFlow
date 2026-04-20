@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getArticleById, updateArticle } from "../services/articles";
+import ErrorMessage from "../components/ErrorMessage";
 
 const EditArticle = () => {
     const { id } = useParams();
@@ -13,6 +14,7 @@ const EditArticle = () => {
     });
 
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
 
     useEffect(() => {
         const fetchArticle = async () => {
@@ -26,8 +28,8 @@ const EditArticle = () => {
             intro: article.intro || "",
             content: article.content,
             });
-        } catch (error) {
-            console.error(error);
+        } catch (err: any) {
+            setError(err.message);
         } finally {
             setLoading(false);
         }
@@ -51,15 +53,15 @@ const EditArticle = () => {
         if (!id) return;
 
         if (!form.title || !form.content) {
-        alert("Title and content are required");
+        setError("Title and content are required");
         return;
         }
 
         try {
         const article = await updateArticle(id, form);
         navigate(`/articles/${article.slug}`);
-        } catch (error) {
-        console.error(error);
+        } catch (err: any) {
+        setError(err.message);
         }
     };
 
@@ -69,19 +71,19 @@ const EditArticle = () => {
         <div>
         <h1>Edit Article</h1>
 
+        {error && <ErrorMessage message={error} />}
+
         <form onSubmit={handleSubmit}>
             <input
             name="title"
             value={form.title}
             onChange={handleChange}
-            placeholder="Title"
             />
 
             <input
             name="intro"
             value={form.intro}
             onChange={handleChange}
-            placeholder="Intro"
             />
 
             <textarea
@@ -91,7 +93,7 @@ const EditArticle = () => {
             rows={10}
             />
 
-            <button type="submit">Actualizar</button>
+            <button type="submit">Update</button>
         </form>
         </div>
     );

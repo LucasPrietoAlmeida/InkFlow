@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getArticles } from "../services/articles";
-import { useNavigate } from "react-router-dom";
+import ArticleCard from "../components/ArticleCard";
+import Layout from "../components/Layout";
 
 type Article = {
     id: string;
@@ -8,7 +9,7 @@ type Article = {
     slug: string;
     intro?: string;
     createdAt: string;
-    author: {
+    author?: {
         username: string;
     };
 };
@@ -16,8 +17,6 @@ type Article = {
 const Home = () => {
     const [articles, setArticles] = useState<Article[]>([]);
     const [loading, setLoading] = useState(true);
-
-    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchArticles = async () => {
@@ -34,32 +33,18 @@ const Home = () => {
         fetchArticles();
     }, []);
 
-    if (loading) return <h1>Loading...</h1>;
+    if (loading) return <p>Cargando artículos...</p>;
 
     return (
-        <div>
-        <h1>InkFlow</h1>
+        <Layout>
+        <h1 style={{ marginBottom: "20px" }}>Ultimos Artículos</h1>
 
-        {articles.length === 0 && <p>No articles yet</p>}
+        {articles.length === 0 && <p>Aún no hay artículos</p>}
 
         {articles.map((article) => (
-            <div
-            key={article.id}
-            style={{ border: "1px solid #ccc", marginBottom: 10, padding: 10 }}
-            >
-            <h2
-                style={{ cursor: "pointer" }}
-                onClick={() => navigate(`/articles/${article.slug}`)}
-            >
-                {article.title}
-            </h2>
-
-            <p>{article.intro}</p>
-
-            <small>By {article.author.username}</small>
-            </div>
+            <ArticleCard key={article.id} article={article} />
         ))}
-        </div>
+        </Layout>
     );
 };
 
