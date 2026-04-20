@@ -2,7 +2,7 @@ const prisma = require("../config/prisma");
 const { generateSlug } = require("../utils/slug");
 
 const createArticle = async (data, userId) => {
-    const { title, content, intro, coverImage } = data;
+    const { title, content, intro, coverImage, status, publishedAt } = data;
 
     if (!title || !content) {
         throw new Error("Missing fields");
@@ -26,12 +26,21 @@ const createArticle = async (data, userId) => {
         coverImage,
         slug,
         authorId: userId,
+        status: status || "draft",
+        publishedAt: publishedAt ? new Date(publishedAt) : null,
         },
     });
-    };
+};
 
-    const getArticles = async () => {
+const getArticles = async () => {
     return prisma.article.findMany({
+        where: {
+        status: "published",
+        OR: [
+            { publishedAt: null },
+            { publishedAt: { lte: new Date() } },
+        ],
+        },
         orderBy: { createdAt: "desc" },
         include: {
         author: {
@@ -45,8 +54,15 @@ const createArticle = async (data, userId) => {
 };
 
 const getArticleBySlug = async (slug) => {
-    const article = await prisma.article.findUnique({
-        where: { slug },
+    const article = await prisma.article.findFirst({
+        where: {
+        slug,
+        status: "published",
+        OR: [
+            { publishedAt: null },
+            { publishedAt: { lte: new Date() } },
+        ],
+        },
         include: {
         author: {
             select: {
@@ -77,7 +93,7 @@ const getArticleById = async (id) => {
     return article;
     };
 
-    const updateArticle = async (id, data, userId) => {
+const updateArticle = async (id, data, userId) => {
     const article = await prisma.article.findUnique({
         where: { id },
     });
@@ -104,6 +120,10 @@ const getArticleById = async (id) => {
         }
 
         updatedData.slug = newSlug;
+    }
+
+    if (data.publishedAt) {
+        updatedData.publishedAt = new Date(data.publishedAt);
     }
 
     return prisma.article.update({

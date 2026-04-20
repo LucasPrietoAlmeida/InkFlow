@@ -26,6 +26,9 @@ model Article {
   coverImage  String?
   createdAt   DateTime @default(now())
 
+  status      String   @default("draft")
+  publishedAt DateTime?
+
   authorId String
   author   User @relation(fields: [authorId], references: [id])
 }
