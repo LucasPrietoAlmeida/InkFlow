@@ -11,6 +11,7 @@ const EditArticle = () => {
         title: "",
         intro: "",
         content: "",
+        status: "draft",
     });
 
     const [loading, setLoading] = useState(true);
@@ -27,6 +28,7 @@ const EditArticle = () => {
             title: article.title,
             intro: article.intro || "",
             content: article.content,
+            status: article.status,
             });
         } catch (err: any) {
             setError(err.message);
@@ -39,7 +41,7 @@ const EditArticle = () => {
     }, [id]);
 
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
         setForm({
         ...form,
@@ -69,22 +71,14 @@ const EditArticle = () => {
 
     return (
         <div>
-        <h1>Edit Article</h1>
+        <h1>Editando Articulo</h1>
 
         {error && <ErrorMessage message={error} />}
 
         <form onSubmit={handleSubmit}>
-            <input
-            name="title"
-            value={form.title}
-            onChange={handleChange}
-            />
+            <input name="title" value={form.title} onChange={handleChange} />
 
-            <input
-            name="intro"
-            value={form.intro}
-            onChange={handleChange}
-            />
+            <input name="intro" value={form.intro} onChange={handleChange} />
 
             <textarea
             name="content"
@@ -93,7 +87,12 @@ const EditArticle = () => {
             rows={10}
             />
 
-            <button type="submit">Update</button>
+            <select name="status" value={form.status} onChange={handleChange}>
+            <option value="draft">Draft</option>
+            <option value="published">Published</option>
+            </select>
+
+            <button type="submit">Editar</button>
         </form>
         </div>
     );
