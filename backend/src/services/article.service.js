@@ -32,25 +32,51 @@ const createArticle = async (data, userId) => {
     });
 };
 
-const getArticles = async () => {
-    return prisma.article.findMany({
+const getArticles = async (page = 1, limit = 6) => {
+    const skip = (page - 1) * limit;
+
+    const [articles, total] = await Promise.all([
+        prisma.article.findMany({
         where: {
-        status: "published",
-        OR: [
-            { publishedAt: null },
-            { publishedAt: { lte: new Date() } },
-        ],
-        },
-        orderBy: { createdAt: "desc" },
-        include: {
-        author: {
-            select: {
-            id: true,
-            username: true,
+            status: "PUBLISHED",
+            publishedAt: {
+            lte: new Date(),
             },
         },
+        skip,
+        take: limit,
+        orderBy: {
+            createdAt: "desc",
         },
-    });
+        include: {
+            author: {
+            select: {
+                id: true,
+                username: true,
+            },
+            },
+        },
+        }),
+
+        prisma.article.count({
+        where: {
+            status: "PUBLISHED",
+            publishedAt: {
+            lte: new Date(),
+            },
+        },
+        }),
+    ]);
+
+    return {
+        articles,
+        pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit),
+        },
+    };
 };
 
 const getArticleBySlug = async (slug) => {

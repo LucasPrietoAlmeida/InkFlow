@@ -15,25 +15,22 @@ const createArticle = async (req, res) => {
 
 const getArticles = async (req, res) => {
     try {
-        const articles = await articleService.getArticles();
-        res.json(articles);
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 6;
+
+        const result = await articleService.getArticles(page, limit);
+
+        res.json(result);
     } catch (error) {
-        res.status(500).json({ error: "Error fetching articles" });
+        res.status(500).json({
+        error: "Error fetching articles",
+        });
     }
 };
 
 const getArticleBySlug = async (req, res) => {
     try {
         const article = await articleService.getArticleBySlug(req.params.slug);
-        res.json(article);
-    } catch (error) {
-        res.status(404).json({ error: error.message });
-    }
-};
-
-const getArticleById = async (req, res) => {
-    try {
-        const article = await articleService.getArticleById(req.params.id);
         res.json(article);
     } catch (error) {
         res.status(404).json({ error: error.message });
@@ -50,10 +47,6 @@ const updateArticle = async (req, res) => {
 
         res.json(article);
     } catch (error) {
-        if (error.message === "Unauthorized") {
-        return res.status(403).json({ error: error.message });
-        }
-
         res.status(400).json({ error: error.message });
     }
 };
@@ -67,10 +60,6 @@ const deleteArticle = async (req, res) => {
 
         res.json(result);
     } catch (error) {
-        if (error.message === "Unauthorized") {
-        return res.status(403).json({ error: error.message });
-        }
-
         res.status(400).json({ error: error.message });
     }
 };
@@ -79,7 +68,6 @@ module.exports = {
     createArticle,
     getArticles,
     getArticleBySlug,
-    getArticleById,
     updateArticle,
     deleteArticle,
 };
