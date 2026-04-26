@@ -13,7 +13,7 @@ app.use(
     cors({
         origin: [
         "http://localhost:5173",
-        "https://inkflow-kc.vercel.app/",
+        "https://inkflow-kc.vercel.app",
         ],
         credentials: true,
     })
