@@ -9,7 +9,15 @@ const articleRoutes = require("./routes/article.routes");
 const app = express();
 
 // Middlewares
-app.use(cors());
+app.use(
+    cors({
+        origin: [
+        "http://localhost:5173",
+        "https://inkflow-kc.vercel.app/",
+        ],
+        credentials: true,
+    })
+);
 app.use(express.json());
 
 // Health check
