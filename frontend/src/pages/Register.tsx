@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerRequest } from "../services/auth";
+import { registerRequest, loginRequest } from "../services/auth";
 import { useAuth } from "../context/AuthContext";
 
 const Register = () => {
@@ -27,25 +27,19 @@ const Register = () => {
         setError("");
 
         try {
-        const user = await registerRequest(form);
+        // registrar
+        await registerRequest(form);
 
-        const loginRes = await fetch("http://localhost:3000/api/auth/login", {
-            method: "POST",
-            headers: {
-            "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
+        // auto login
+        const data = await loginRequest({
             email: form.email,
             password: form.password,
-            }),
         });
-
-        const data = await loginRes.json();
 
         login(data);
         navigate("/");
         } catch (err: any) {
-        setError(err.response?.data?.error || "Register error");
+        setError(err.message || "Register error");
         }
     };
 
@@ -59,6 +53,7 @@ const Register = () => {
             name="email"
             placeholder="Email"
             onChange={handleChange}
+            required
             />
 
             <input
@@ -66,6 +61,7 @@ const Register = () => {
             name="username"
             placeholder="Username"
             onChange={handleChange}
+            required
             />
 
             <input
@@ -73,6 +69,7 @@ const Register = () => {
             name="password"
             placeholder="Password"
             onChange={handleChange}
+            required
             />
 
             <button type="submit">Register</button>
