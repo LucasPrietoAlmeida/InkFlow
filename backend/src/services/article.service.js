@@ -35,14 +35,13 @@ const createArticle = async (data, userId) => {
 const getArticles = async (page = 1, limit = 6) => {
     const skip = (page - 1) * limit;
 
+    const where = {
+        status: "published",
+    };
+
     const [articles, total] = await Promise.all([
         prisma.article.findMany({
-        where: {
-            status: "PUBLISHED",
-            publishedAt: {
-            lte: new Date(),
-            },
-        },
+        where,
         skip,
         take: limit,
         orderBy: {
@@ -57,15 +56,7 @@ const getArticles = async (page = 1, limit = 6) => {
             },
         },
         }),
-
-        prisma.article.count({
-        where: {
-            status: "PUBLISHED",
-            publishedAt: {
-            lte: new Date(),
-            },
-        },
-        }),
+        prisma.article.count({ where }),
     ]);
 
     return {
