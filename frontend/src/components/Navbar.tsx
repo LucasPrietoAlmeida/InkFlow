@@ -19,12 +19,22 @@ const Navbar = () => {
             <h2>InkFlow</h2>
         </Link>
 
-        <div>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             {user ? (
             <>
-                <span style={{ marginRight: "10px" }}>
-                {user.username}
-                </span>
+                <Link to="/create">
+                <button
+                    style={{
+                    padding: "6px 12px",
+                    cursor: "pointer",
+                    }}
+                >
+                    Crear artículo
+                </button>
+                </Link>
+
+                <span>{user.username}</span>
+
                 <button onClick={logout}>Cerrar Sesión</button>
             </>
             ) : (
