@@ -37,24 +37,28 @@ const getArticles = async (page = 1, limit = 6) => {
 
     const where = {
         status: "published",
+        OR: [
+            { publishedAt: null },
+            { publishedAt: { lte: new Date() } },
+        ],
     };
 
     const [articles, total] = await Promise.all([
         prisma.article.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: {
-            createdAt: "desc",
-        },
-        include: {
-            author: {
-            select: {
-                id: true,
-                username: true,
+            where,
+            skip,
+            take: limit,
+            orderBy: {
+                createdAt: "desc",
             },
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        username: true,
+                    },
+                },
             },
-        },
         }),
         prisma.article.count({ where }),
     ]);
@@ -62,10 +66,10 @@ const getArticles = async (page = 1, limit = 6) => {
     return {
         articles,
         pagination: {
-        page,
-        limit,
-        total,
-        pages: Math.ceil(total / limit),
+            page,
+            limit,
+            total,
+            pages: Math.ceil(total / limit),
         },
     };
 };

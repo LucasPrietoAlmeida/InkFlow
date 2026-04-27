@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getArticles } from "../services/articles";
 import ArticleCard from "../components/ArticleCard";
 import Layout from "../components/Layout";
+import Pagination from "../components/Pagination";
 
 type Article = {
     id: string;
@@ -23,18 +24,23 @@ const Home = () => {
 
     useEffect(() => {
         const fetchArticles = async () => {
-        setLoading(true);
+            setLoading(true);
 
-        try {
-            const data = await getArticles(page, 6);
+            try {
+                const data = await getArticles(page, 6);
 
-            setArticles(data.articles);
-            setPages(data.pagination.pages);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
+                setArticles(data.articles);
+                setPages(data.pagination.pages);
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth",
+                });
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
         };
 
         fetchArticles();
@@ -44,43 +50,27 @@ const Home = () => {
 
     return (
         <Layout>
-        <h1 style={{ marginBottom: "20px" }}>Últimos artículos</h1>
+            <h1 style={{ marginBottom: "20px" }}>
+                Últimos artículos
+            </h1>
 
-        {articles.length === 0 && <p>Aún no hay artículos</p>}
+            {articles.length === 0 && (
+                <p>Aún no hay artículos</p>
+            )}
 
-        {articles.map((article) => (
-            <ArticleCard key={article.id} article={article} />
-        ))}
+            {articles.map((article) => (
+                <ArticleCard
+                    key={article.id}
+                    article={article}
+                />
+            ))}
 
-        {pages > 1 && (
-            <div
-            style={{
-                marginTop: "30px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                gap: "20px",
-            }}
-            >
-            <button
-                disabled={page === 1}
-                onClick={() => setPage((prev) => prev - 1)}
-            >
-                ← Anterior
-            </button>
-
-            <span>
-                Página {page} de {pages}
-            </span>
-
-            <button
-                disabled={page === pages}
-                onClick={() => setPage((prev) => prev + 1)}
-            >
-                Siguiente →
-            </button>
-            </div>
-        )}
+            <Pagination
+                page={page}
+                pages={pages}
+                onPrev={() => setPage((prev) => prev - 1)}
+                onNext={() => setPage((prev) => prev + 1)}
+            />
         </Layout>
     );
 };
