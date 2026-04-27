@@ -31,4 +31,13 @@ model Article {
 
   authorId String
   author   User @relation(fields: [authorId], references: [id])
+
+  categories Category[]
+}
+
+model Category {
+  id       String    @id @default(uuid())
+  name     String    @unique
+  slug     String    @unique
+  articles Article[]
 }

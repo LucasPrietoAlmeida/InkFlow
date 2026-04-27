@@ -4,7 +4,10 @@ const prisma = require("./config/prisma");
 
 const authRoutes = require("./routes/auth.routes");
 const authMiddleware = require("./middlewares/auth.middleware");
+
 const articleRoutes = require("./routes/article.routes");
+
+const categoryRoutes = require("./routes/category.routes");
 
 const app = express();
 
@@ -45,6 +48,7 @@ app.get("/test-db", async (req, res) => {
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/articles", articleRoutes);
+app.use("/api/categories", categoryRoutes);
 
 // Test Ruta protegida 
 app.get("/api/private", authMiddleware, (req, res) => {

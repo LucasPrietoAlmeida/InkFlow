@@ -2,7 +2,15 @@ const prisma = require("../config/prisma");
 const { generateSlug } = require("../utils/slug");
 
 const createArticle = async (data, userId) => {
-    const { title, content, intro, coverImage, status, publishedAt } = data;
+    const {
+        title,
+        content,
+        intro,
+        coverImage,
+        status,
+        publishedAt,
+        categories = [],
+    } = data;
 
     if (!title || !content) {
         throw new Error("Missing fields");
@@ -20,14 +28,20 @@ const createArticle = async (data, userId) => {
 
     return prisma.article.create({
         data: {
-        title,
-        content,
-        intro,
-        coverImage,
-        slug,
-        authorId: userId,
-        status: status || "draft",
-        publishedAt: publishedAt ? new Date(publishedAt) : null,
+            title,
+            content,
+            intro,
+            coverImage,
+            slug,
+            authorId: userId,
+            status: status || "draft",
+            publishedAt: publishedAt ? new Date(publishedAt) : null,
+            categories: {
+                connect: categories.map((id) => ({ id })),
+            },
+        },
+        include: {
+            categories: true,
         },
     });
 };
@@ -58,6 +72,7 @@ const getArticles = async (page = 1, limit = 6) => {
                         username: true,
                     },
                 },
+                categories: true,
             },
         }),
         prisma.article.count({ where }),
@@ -85,13 +100,14 @@ const getArticleBySlug = async (slug) => {
         ],
         },
         include: {
-        author: {
-            select: {
-            id: true,
-            username: true,
-            email: true,
+            author: {
+                select: {
+                    id: true,
+                    username: true,
+                    email: true,
+                },
             },
-        },
+            categories: true,
         },
     });
 
@@ -105,6 +121,9 @@ const getArticleBySlug = async (slug) => {
 const getArticleById = async (id) => {
     const article = await prisma.article.findUnique({
         where: { id },
+        include: {
+            categories: true,
+        },
     });
 
     if (!article) {
@@ -112,7 +131,7 @@ const getArticleById = async (id) => {
     }
 
     return article;
-    };
+};
 
 const updateArticle = async (id, data, userId) => {
     const article = await prisma.article.findUnique({
@@ -145,6 +164,12 @@ const updateArticle = async (id, data, userId) => {
 
     if (data.publishedAt) {
         updatedData.publishedAt = new Date(data.publishedAt);
+    }
+
+    if (data.categories) {
+        updatedData.categories = {
+            set: data.categories.map((id) => ({ id })),
+        };
     }
 
     return prisma.article.update({

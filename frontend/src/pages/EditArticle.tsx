@@ -1,69 +1,87 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getArticleById, updateArticle } from "../services/articles";
+import { getCategories } from "../services/categories";
 import ErrorMessage from "../components/ErrorMessage";
+
+type Category = {
+    id: string;
+    name: string;
+    slug: string;
+};
 
 const EditArticle = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+
+    const [categories, setCategories] = useState<Category[]>([]);
 
     const [form, setForm] = useState({
         title: "",
         intro: "",
         content: "",
         status: "draft",
+        categories: [] as string[],
     });
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
     useEffect(() => {
-        const fetchArticle = async () => {
-        try {
-            if (!id) return;
+        const fetchData = async () => {
+            try {
+                const [article, categoriesData] = await Promise.all([
+                    getArticleById(id!),
+                    getCategories(),
+                ]);
 
-            const article = await getArticleById(id);
+                setCategories(categoriesData);
 
-            setForm({
-            title: article.title,
-            intro: article.intro || "",
-            content: article.content,
-            status: article.status,
-            });
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
+                setForm({
+                    title: article.title,
+                    intro: article.intro || "",
+                    content: article.content,
+                    status: article.status,
+                    categories: article.categories.map((c: Category) => c.id),
+                });
+            } catch (err: any) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
         };
 
-        fetchArticle();
+        fetchData();
     }, [id]);
 
     const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+        e: React.ChangeEvent<
+            HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+        >
     ) => {
         setForm({
-        ...form,
-        [e.target.name]: e.target.value,
+            ...form,
+            [e.target.name]: e.target.value,
         });
+    };
+
+    const handleCategoryChange = (id: string) => {
+        setForm((prev) => ({
+            ...prev,
+            categories: prev.categories.includes(id)
+                ? prev.categories.filter((catId) => catId !== id)
+                : [...prev.categories, id],
+        }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!id) return;
-
-        if (!form.title || !form.content) {
-        setError("Title and content are required");
-        return;
-        }
-
         try {
-        const article = await updateArticle(id, form);
-        navigate(`/articles/${article.slug}`);
+            const article = await updateArticle(id!, form);
+            navigate(`/articles/${article.slug}`);
         } catch (err: any) {
-        setError(err.message);
+            setError(err.message);
         }
     };
 
@@ -71,29 +89,62 @@ const EditArticle = () => {
 
     return (
         <div>
-        <h1>Editando Articulo</h1>
+            <h1>Editar artículo</h1>
 
-        {error && <ErrorMessage message={error} />}
+            {error && <ErrorMessage message={error} />}
 
-        <form onSubmit={handleSubmit}>
-            <input name="title" value={form.title} onChange={handleChange} />
+            <form onSubmit={handleSubmit}>
+                <input
+                    name="title"
+                    value={form.title}
+                    onChange={handleChange}
+                />
 
-            <input name="intro" value={form.intro} onChange={handleChange} />
+                <input
+                    name="intro"
+                    value={form.intro}
+                    onChange={handleChange}
+                />
 
-            <textarea
-            name="content"
-            value={form.content}
-            onChange={handleChange}
-            rows={10}
-            />
+                <textarea
+                    name="content"
+                    value={form.content}
+                    onChange={handleChange}
+                    rows={10}
+                />
 
-            <select name="status" value={form.status} onChange={handleChange}>
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
-            </select>
+                <select
+                    name="status"
+                    value={form.status}
+                    onChange={handleChange}
+                >
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                </select>
 
-            <button type="submit">Editar</button>
-        </form>
+                <h3>Categorías</h3>
+
+                {categories.map((category) => (
+                    <label
+                        key={category.id}
+                        style={{
+                            display: "block",
+                            marginBottom: "8px",
+                        }}
+                    >
+                        <input
+                            type="checkbox"
+                            checked={form.categories.includes(category.id)}
+                            onChange={() =>
+                                handleCategoryChange(category.id)
+                            }
+                        />{" "}
+                        {category.name}
+                    </label>
+                ))}
+
+                <button type="submit">Guardar</button>
+            </form>
         </div>
     );
 };
