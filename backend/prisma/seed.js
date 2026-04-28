@@ -1,4 +1,6 @@
-const prisma = require("../src/config/prisma");
+const { PrismaClient } = require("@prisma/client");
+
+const prisma = new PrismaClient();
 
 async function main() {
     const categories = [
@@ -15,23 +17,26 @@ async function main() {
     ];
 
     for (const name of categories) {
+        const slug = name.toLowerCase().replace(/\s+/g, "-");
+
         await prisma.category.upsert({
-            where: {
-                slug: name.toLowerCase().replace(/\s+/g, "-"),
-            },
+            where: { slug },
             update: {},
             create: {
                 name,
-                slug: name.toLowerCase().replace(/\s+/g, "-"),
+                slug,
             },
         });
     }
 
-    console.log("Seed completado");
+    console.log("Seed completado correctamente");
 }
 
 main()
-    .catch(console.error)
+    .catch((e) => {
+        console.error("SEED ERROR:", e);
+        process.exit(1);
+    })
     .finally(async () => {
         await prisma.$disconnect();
     });
