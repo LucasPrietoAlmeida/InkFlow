@@ -1,8 +1,20 @@
-const { PrismaClient } = require("@prisma/client");
-
-const prisma = new PrismaClient();
+const prisma = require("../src/config/prisma");
 
 async function main() {
+    await prisma.user.upsert({
+        where: {
+            email: "lucas@test.com",
+        },
+        update: {},
+        create: {
+            email: "lucas@test.com",
+            username: "lucas",
+            password: "123456",
+            bio: "Desarrollador Full Stack",
+            avatar: null,
+        },
+    });
+
     const categories = [
         "General",
         "Presentaciones",
@@ -17,26 +29,23 @@ async function main() {
     ];
 
     for (const name of categories) {
-        const slug = name.toLowerCase().replace(/\s+/g, "-");
-
         await prisma.category.upsert({
-            where: { slug },
+            where: {
+                slug: name.toLowerCase().replace(/\s+/g, "-"),
+            },
             update: {},
             create: {
                 name,
-                slug,
+                slug: name.toLowerCase().replace(/\s+/g, "-"),
             },
         });
     }
 
-    console.log("Seed completado correctamente");
+    console.log("Seed completado");
 }
 
 main()
-    .catch((e) => {
-        console.error("SEED ERROR:", e);
-        process.exit(1);
-    })
+    .catch(console.error)
     .finally(async () => {
         await prisma.$disconnect();
     });

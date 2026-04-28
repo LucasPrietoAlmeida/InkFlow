@@ -12,6 +12,8 @@ model User {
   email     String   @unique
   username  String   @unique
   password  String
+  bio       String?
+  avatar    String?
   createdAt DateTime @default(now())
 
   articles Article[]
