@@ -66,7 +66,7 @@ const ArticleDetail = () => {
 
         {isOwner && (
             <div>
-            <button onClick={() => navigate(`/edit/${article.id}`)}>
+            <button onClick={() => navigate(`articles/edit/${article.id}`)}>
                 Editar
             </button>
 

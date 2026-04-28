@@ -22,7 +22,7 @@ const Navbar = () => {
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             {user ? (
             <>
-                <Link to="/create">
+                <Link to="/articles/create">
                 <button
                     style={{
                     padding: "6px 12px",
