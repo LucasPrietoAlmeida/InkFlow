@@ -1,6 +1,14 @@
 const prisma = require("../config/prisma");
 const { generateSlug } = require("../utils/slug");
 
+const publishedWhere = {
+    status: "published",
+    OR: [
+        { publishedAt: null },
+        { publishedAt: { lte: new Date() } },
+    ],
+};
+
 const createArticle = async (data, userId) => {
     const {
         title,
@@ -36,46 +44,45 @@ const createArticle = async (data, userId) => {
             authorId: userId,
             status: status || "draft",
             publishedAt: publishedAt ? new Date(publishedAt) : null,
+
             categories: {
-                connect: categories.map((id) => ({ id })),
-            },
+                create: categories.map((categoryId) => ({
+                    category: {
+                        connect: { id: categoryId }
+                    }
+                }))
+            }
         },
         include: {
-            categories: true,
-        },
+            author: {
+                select: { id: true, username: true }
+            },
+            categories: {
+                include: { category: true }
+            }
+        }
     });
 };
 
 const getArticles = async (page = 1, limit = 6) => {
     const skip = (page - 1) * limit;
 
-    const where = {
-        status: "published",
-        OR: [
-            { publishedAt: null },
-            { publishedAt: { lte: new Date() } },
-        ],
-    };
-
     const [articles, total] = await Promise.all([
         prisma.article.findMany({
-            where,
+            where: publishedWhere,
             skip,
             take: limit,
-            orderBy: {
-                createdAt: "desc",
-            },
+            orderBy: { createdAt: "desc" },
             include: {
                 author: {
-                    select: {
-                        id: true,
-                        username: true,
-                    },
+                    select: { id: true, username: true }
                 },
-                categories: true,
-            },
+                categories: {
+                    include: { category: true }
+                }
+            }
         }),
-        prisma.article.count({ where }),
+        prisma.article.count({ where: publishedWhere })
     ]);
 
     return {
@@ -85,35 +92,27 @@ const getArticles = async (page = 1, limit = 6) => {
             limit,
             total,
             pages: Math.ceil(total / limit),
-        },
+        }
     };
 };
 
 const getArticleBySlug = async (slug) => {
     const article = await prisma.article.findFirst({
         where: {
-        slug,
-        status: "published",
-        OR: [
-            { publishedAt: null },
-            { publishedAt: { lte: new Date() } },
-        ],
+            slug,
+            ...publishedWhere
         },
         include: {
             author: {
-                select: {
-                    id: true,
-                    username: true,
-                    email: true,
-                },
+                select: { id: true, username: true, email: true }
             },
-            categories: true,
-        },
+            categories: {
+                include: { category: true }
+            }
+        }
     });
 
-    if (!article) {
-        throw new Error("Article not found");
-    }
+    if (!article) throw new Error("Article not found");
 
     return article;
 };
@@ -122,41 +121,35 @@ const getArticleById = async (id) => {
     const article = await prisma.article.findUnique({
         where: { id },
         include: {
-            categories: true,
-        },
+            author: true,
+            categories: {
+                include: { category: true }
+            }
+        }
     });
 
-    if (!article) {
-        throw new Error("Article not found");
-    }
+    if (!article) throw new Error("Article not found");
 
     return article;
 };
 
 const updateArticle = async (id, data, userId) => {
-    const article = await prisma.article.findUnique({
-        where: { id },
-    });
+    const article = await prisma.article.findUnique({ where: { id } });
 
-    if (!article) {
-        throw new Error("Article not found");
-    }
+    if (!article) throw new Error("Article not found");
+    if (article.authorId !== userId) throw new Error("Unauthorized");
 
-    if (article.authorId !== userId) {
-        throw new Error("Unauthorized");
-    }
-
-    let updatedData = { ...data };
+    const updatedData = { ...data };
 
     if (data.title) {
         let newSlug = generateSlug(data.title);
 
         const existing = await prisma.article.findUnique({
-        where: { slug: newSlug },
+            where: { slug: newSlug }
         });
 
         if (existing && existing.id !== id) {
-        newSlug = `${newSlug}-${Date.now()}`;
+            newSlug = `${newSlug}-${Date.now()}`;
         }
 
         updatedData.slug = newSlug;
@@ -168,32 +161,28 @@ const updateArticle = async (id, data, userId) => {
 
     if (data.categories) {
         updatedData.categories = {
-            set: data.categories.map((id) => ({ id })),
+            set: data.categories.map((categoryId) => ({
+                categoryId_articleId: {
+                    articleId: id,
+                    categoryId
+                }
+            }))
         };
     }
 
     return prisma.article.update({
         where: { id },
-        data: updatedData,
+        data: updatedData
     });
 };
 
 const deleteArticle = async (id, userId) => {
-    const article = await prisma.article.findUnique({
-        where: { id },
-    });
+    const article = await prisma.article.findUnique({ where: { id } });
 
-    if (!article) {
-        throw new Error("Article not found");
-    }
+    if (!article) throw new Error("Article not found");
+    if (article.authorId !== userId) throw new Error("Unauthorized");
 
-    if (article.authorId !== userId) {
-        throw new Error("Unauthorized");
-    }
-
-    await prisma.article.delete({
-        where: { id },
-    });
+    await prisma.article.delete({ where: { id } });
 
     return { message: "Article deleted" };
 };
@@ -204,5 +193,5 @@ module.exports = {
     getArticleBySlug,
     getArticleById,
     updateArticle,
-    deleteArticle,
+    deleteArticle
 };

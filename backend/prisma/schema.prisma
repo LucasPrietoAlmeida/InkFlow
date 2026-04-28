@@ -32,12 +32,23 @@ model Article {
   authorId String
   author   User @relation(fields: [authorId], references: [id])
 
-  categories Category[]
+  categories ArticleCategory[]
 }
 
 model Category {
-  id       String    @id @default(uuid())
-  name     String    @unique
-  slug     String    @unique
-  articles Article[]
+  id    String   @id @default(uuid())
+  name  String   @unique
+  slug  String   @unique
+
+  articles ArticleCategory[]
+}
+
+model ArticleCategory {
+  articleId  String
+  categoryId String
+
+  article  Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, categoryId])
 }

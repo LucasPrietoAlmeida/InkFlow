@@ -2,9 +2,7 @@ const prisma = require("../config/prisma");
 
 const getCategories = async () => {
     return prisma.category.findMany({
-        orderBy: {
-            name: "asc",
-        },
+        orderBy: { name: "asc" }
     });
 };
 
@@ -12,24 +10,22 @@ const getArticlesByCategory = async (slug, page = 1, limit = 6) => {
     const skip = (page - 1) * limit;
 
     const category = await prisma.category.findUnique({
-        where: { slug },
+        where: { slug }
     });
 
-    if (!category) {
-        throw new Error("Category not found");
-    }
+    if (!category) throw new Error("Category not found");
 
     const where = {
         status: "published",
         categories: {
             some: {
-                slug,
-            },
+                category: { slug }
+            }
         },
         OR: [
             { publishedAt: null },
-            { publishedAt: { lte: new Date() } },
-        ],
+            { publishedAt: { lte: new Date() } }
+        ]
     };
 
     const [articles, total] = await Promise.all([
@@ -37,20 +33,13 @@ const getArticlesByCategory = async (slug, page = 1, limit = 6) => {
             where,
             skip,
             take: limit,
-            orderBy: {
-                createdAt: "desc",
-            },
+            orderBy: { createdAt: "desc" },
             include: {
-                author: {
-                    select: {
-                        id: true,
-                        username: true,
-                    },
-                },
-                categories: true,
-            },
+                author: true,
+                categories: { include: { category: true } }
+            }
         }),
-        prisma.article.count({ where }),
+        prisma.article.count({ where })
     ]);
 
     return {
@@ -60,12 +49,12 @@ const getArticlesByCategory = async (slug, page = 1, limit = 6) => {
             page,
             limit,
             total,
-            pages: Math.ceil(total / limit),
-        },
+            pages: Math.ceil(total / limit)
+        }
     };
 };
 
 module.exports = {
     getCategories,
-    getArticlesByCategory,
+    getArticlesByCategory
 };

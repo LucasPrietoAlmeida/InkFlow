@@ -29,13 +29,10 @@ const Home = () => {
             try {
                 const data = await getArticles(page, 6);
 
-                setArticles(data.articles);
-                setPages(data.pagination.pages);
+                setArticles(data?.articles ?? []);
+                setPages(data?.pagination?.pages ?? 1);
 
-                window.scrollTo({
-                    top: 0,
-                    behavior: "smooth",
-                });
+                window.scrollTo({ top: 0, behavior: "smooth" });
             } catch (error) {
                 console.error(error);
             } finally {
@@ -50,26 +47,19 @@ const Home = () => {
 
     return (
         <Layout>
-            <h1 style={{ marginBottom: "20px" }}>
-                Últimos artículos
-            </h1>
+            <h1>Últimos artículos</h1>
 
-            {articles.length === 0 && (
-                <p>Aún no hay artículos</p>
-            )}
+            {articles.length === 0 && <p>Aún no hay artículos</p>}
 
             {articles.map((article) => (
-                <ArticleCard
-                    key={article.id}
-                    article={article}
-                />
+                <ArticleCard key={article.id} article={article} />
             ))}
 
             <Pagination
                 page={page}
                 pages={pages}
-                onPrev={() => setPage((prev) => prev - 1)}
-                onNext={() => setPage((prev) => prev + 1)}
+                onPrev={() => setPage((p) => p - 1)}
+                onNext={() => setPage((p) => p + 1)}
             />
         </Layout>
     );

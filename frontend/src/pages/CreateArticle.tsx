@@ -3,6 +3,7 @@ import { createArticle } from "../services/articles";
 import { getCategories } from "../services/categories";
 import { useNavigate } from "react-router-dom";
 import ErrorMessage from "../components/ErrorMessage";
+import Layout from "../components/Layout";
 
 type Category = {
     id: string;
@@ -23,6 +24,8 @@ const CreateArticle = () => {
         categories: [] as string[],
     });
 
+    const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState("");
 
     useEffect(() => {
@@ -30,8 +33,10 @@ const CreateArticle = () => {
             try {
                 const data = await getCategories();
                 setCategories(data);
-            } catch (error) {
-                console.error(error);
+            } catch (err: any) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -43,10 +48,12 @@ const CreateArticle = () => {
             HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
         >
     ) => {
-        setForm({
-            ...form,
-            [e.target.name]: e.target.value,
-        });
+        const { name, value } = e.target;
+
+        setForm((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
     };
 
     const handleCategoryChange = (id: string) => {
@@ -61,80 +68,148 @@ const CreateArticle = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!form.title || !form.content) {
-            setError("Title and content are required");
+        setError("");
+
+        if (!form.title.trim() || !form.content.trim()) {
+            setError("El título y el contenido son obligatorios");
             return;
         }
 
         try {
-            const article = await createArticle(form);
+            setSubmitting(true);
+
+            const article = await createArticle({
+                ...form,
+                categories: form.categories,
+            });
+
             navigate(`/articles/${article.slug}`);
         } catch (err: any) {
             setError(err.message);
+        } finally {
+            setSubmitting(false);
         }
     };
 
+    if (loading) {
+        return (
+            <Layout>
+                <p>Cargando categorías...</p>
+            </Layout>
+        );
+    }
+
     return (
-        <div>
-            <h1>Crear artículo</h1>
+        <Layout>
+            <h1 style={{ marginBottom: "24px" }}>Crear artículo</h1>
 
             {error && <ErrorMessage message={error} />}
 
-            <form onSubmit={handleSubmit}>
+            <form
+                onSubmit={handleSubmit}
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "16px",
+                    maxWidth: "800px",
+                }}
+            >
                 <input
                     name="title"
-                    placeholder="Title"
+                    placeholder="Título"
                     value={form.title}
                     onChange={handleChange}
+                    style={{
+                        padding: "12px",
+                        borderRadius: "8px",
+                        border: "1px solid #ddd",
+                    }}
                 />
 
                 <input
                     name="intro"
-                    placeholder="Intro"
+                    placeholder="Introducción"
                     value={form.intro}
                     onChange={handleChange}
+                    style={{
+                        padding: "12px",
+                        borderRadius: "8px",
+                        border: "1px solid #ddd",
+                    }}
                 />
 
                 <textarea
                     name="content"
-                    rows={10}
+                    rows={12}
+                    placeholder="Contenido"
                     value={form.content}
                     onChange={handleChange}
+                    style={{
+                        padding: "12px",
+                        borderRadius: "8px",
+                        border: "1px solid #ddd",
+                        resize: "vertical",
+                    }}
                 />
 
                 <select
                     name="status"
                     value={form.status}
                     onChange={handleChange}
+                    style={{
+                        padding: "12px",
+                        borderRadius: "8px",
+                        border: "1px solid #ddd",
+                    }}
                 >
-                    <option value="draft">Draft</option>
-                    <option value="published">Published</option>
+                    <option value="draft">Borrador</option>
+                    <option value="published">Publicado</option>
                 </select>
 
-                <h3>Categorías</h3>
+                <div>
+                    <h3 style={{ marginBottom: "12px" }}>Categorías</h3>
 
-                {categories.map((category) => (
-                    <label
-                        key={category.id}
-                        style={{
-                            display: "block",
-                            marginBottom: "8px",
-                        }}
-                    >
-                        <input
-                            type="checkbox"
-                            checked={form.categories.includes(category.id)}
-                            onChange={() =>
-                                handleCategoryChange(category.id)
-                            }
-                        />{" "}
-                        {category.name}
-                    </label>
-                ))}
+                    {categories.length === 0 ? (
+                        <p>No hay categorías disponibles</p>
+                    ) : (
+                        categories.map((category) => (
+                            <label
+                                key={category.id}
+                                style={{
+                                    display: "block",
+                                    marginBottom: "10px",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                <input
+                                    type="checkbox"
+                                    checked={form.categories.includes(category.id)}
+                                    onChange={() =>
+                                        handleCategoryChange(category.id)
+                                    }
+                                    style={{ marginRight: "8px" }}
+                                />
+                                {category.name}
+                            </label>
+                        ))
+                    )}
+                </div>
 
-                <button type="submit">Crear</button>
+                <button
+                    type="submit"
+                    disabled={submitting}
+                    style={{
+                        padding: "12px 20px",
+                        border: "none",
+                        borderRadius: "8px",
+                        cursor: submitting ? "not-allowed" : "pointer",
+                        opacity: submitting ? 0.7 : 1,
+                    }}
+                >
+                    {submitting ? "Creando..." : "Crear artículo"}
+                </button>
             </form>
-        </div>
+        </Layout>
     );
 };
 

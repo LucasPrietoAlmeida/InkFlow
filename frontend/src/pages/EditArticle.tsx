@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getArticleById, updateArticle } from "../services/articles";
 import { getCategories } from "../services/categories";
 import ErrorMessage from "../components/ErrorMessage";
+import Layout from "../components/Layout";
 
 type Category = {
     id: string;
@@ -11,7 +12,7 @@ type Category = {
 };
 
 const EditArticle = () => {
-    const { id } = useParams();
+    const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
 
     const [categories, setCategories] = useState<Category[]>([]);
@@ -25,6 +26,7 @@ const EditArticle = () => {
     });
 
     const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState("");
 
     useEffect(() => {
@@ -38,11 +40,14 @@ const EditArticle = () => {
                 setCategories(categoriesData);
 
                 setForm({
-                    title: article.title,
+                    title: article.title || "",
                     intro: article.intro || "",
-                    content: article.content,
-                    status: article.status,
-                    categories: article.categories.map((c: Category) => c.id),
+                    content: article.content || "",
+                    status: article.status || "draft",
+                    categories:
+                        article.categories?.map(
+                            (item: any) => item.category.id
+                        ) ?? [],
                 });
             } catch (err: any) {
                 setError(err.message);
@@ -59,93 +64,168 @@ const EditArticle = () => {
             HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
         >
     ) => {
-        setForm({
-            ...form,
-            [e.target.name]: e.target.value,
-        });
-    };
+        const { name, value } = e.target;
 
-    const handleCategoryChange = (id: string) => {
         setForm((prev) => ({
             ...prev,
-            categories: prev.categories.includes(id)
-                ? prev.categories.filter((catId) => catId !== id)
-                : [...prev.categories, id],
+            [name]: value,
+        }));
+    };
+
+    const handleCategoryChange = (categoryId: string) => {
+        setForm((prev) => ({
+            ...prev,
+            categories: prev.categories.includes(categoryId)
+                ? prev.categories.filter((id) => id !== categoryId)
+                : [...prev.categories, categoryId],
         }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        setError("");
+
+        if (!form.title.trim() || !form.content.trim()) {
+            setError("El título y el contenido son obligatorios");
+            return;
+        }
+
         try {
-            const article = await updateArticle(id!, form);
+            setSubmitting(true);
+
+            const article = await updateArticle(id!, {
+                ...form,
+                categories: form.categories,
+            });
+
             navigate(`/articles/${article.slug}`);
         } catch (err: any) {
             setError(err.message);
+        } finally {
+            setSubmitting(false);
         }
     };
 
-    if (loading) return <p>Cargando...</p>;
+    if (loading) {
+        return (
+            <Layout>
+                <p>Cargando artículo...</p>
+            </Layout>
+        );
+    }
 
     return (
-        <div>
-            <h1>Editar artículo</h1>
+        <Layout>
+            <h1 style={{ marginBottom: "24px" }}>Editar artículo</h1>
 
             {error && <ErrorMessage message={error} />}
 
-            <form onSubmit={handleSubmit}>
+            <form
+                onSubmit={handleSubmit}
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "16px",
+                    maxWidth: "800px",
+                }}
+            >
                 <input
                     name="title"
+                    placeholder="Título"
                     value={form.title}
                     onChange={handleChange}
+                    style={{
+                        padding: "12px",
+                        borderRadius: "8px",
+                        border: "1px solid #ddd",
+                    }}
                 />
 
                 <input
                     name="intro"
+                    placeholder="Introducción"
                     value={form.intro}
                     onChange={handleChange}
+                    style={{
+                        padding: "12px",
+                        borderRadius: "8px",
+                        border: "1px solid #ddd",
+                    }}
                 />
 
                 <textarea
                     name="content"
+                    rows={12}
+                    placeholder="Contenido"
                     value={form.content}
                     onChange={handleChange}
-                    rows={10}
+                    style={{
+                        padding: "12px",
+                        borderRadius: "8px",
+                        border: "1px solid #ddd",
+                        resize: "vertical",
+                    }}
                 />
 
                 <select
                     name="status"
                     value={form.status}
                     onChange={handleChange}
+                    style={{
+                        padding: "12px",
+                        borderRadius: "8px",
+                        border: "1px solid #ddd",
+                    }}
                 >
-                    <option value="draft">Draft</option>
-                    <option value="published">Published</option>
+                    <option value="draft">Borrador</option>
+                    <option value="published">Publicado</option>
                 </select>
 
-                <h3>Categorías</h3>
+                <div>
+                    <h3 style={{ marginBottom: "12px" }}>Categorías</h3>
 
-                {categories.map((category) => (
-                    <label
-                        key={category.id}
-                        style={{
-                            display: "block",
-                            marginBottom: "8px",
-                        }}
-                    >
-                        <input
-                            type="checkbox"
-                            checked={form.categories.includes(category.id)}
-                            onChange={() =>
-                                handleCategoryChange(category.id)
-                            }
-                        />{" "}
-                        {category.name}
-                    </label>
-                ))}
+                    {categories.length === 0 ? (
+                        <p>No hay categorías disponibles</p>
+                    ) : (
+                        categories.map((category) => (
+                            <label
+                                key={category.id}
+                                style={{
+                                    display: "block",
+                                    marginBottom: "10px",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                <input
+                                    type="checkbox"
+                                    checked={form.categories.includes(category.id)}
+                                    onChange={() =>
+                                        handleCategoryChange(category.id)
+                                    }
+                                    style={{ marginRight: "8px" }}
+                                />
+                                {category.name}
+                            </label>
+                        ))
+                    )}
+                </div>
 
-                <button type="submit">Guardar</button>
+                <button
+                    type="submit"
+                    disabled={submitting}
+                    style={{
+                        padding: "12px 20px",
+                        border: "none",
+                        borderRadius: "8px",
+                        cursor: submitting ? "not-allowed" : "pointer",
+                        opacity: submitting ? 0.7 : 1,
+                    }}
+                >
+                    {submitting ? "Guardando..." : "Guardar cambios"}
+                </button>
             </form>
-        </div>
+        </Layout>
     );
 };
 
