@@ -17,8 +17,12 @@ const getArticles = async (req, res) => {
         const result = await articleService.getArticles(page, limit);
 
         res.json(result);
-    } catch {
-        res.status(500).json({ error: "Error fetching articles" });
+    } catch (error) {
+        console.error("GET ARTICLES ERROR:", error);
+
+        res.status(500).json({
+            error: error.message,
+        });
     }
 };
 
