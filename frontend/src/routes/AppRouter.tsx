@@ -7,6 +7,7 @@ import ArticleDetail from "../pages/ArticleDetail";
 import CreateArticle from "../pages/CreateArticle";
 import EditArticle from "../pages/EditArticle";
 import CategoryPage from "../pages/CategoryPage";
+import AuthorProfile from "../pages/AuthorProfile";
 
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -19,7 +20,7 @@ const AppRouter = () => {
             {/* AUTH */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-
+            
             {/* ARTICLES */}
             <Route path="/articles" element={<Home />} />
             <Route path="/articles/:slug" element={<ArticleDetail />} />
@@ -46,6 +47,9 @@ const AppRouter = () => {
                     </ProtectedRoute>
                 }
             />
+
+            {/* AUTOR PROFILE*/}
+            <Route path="/:username" element={<AuthorProfile />} />
 
             {/* fallback */}
             <Route path="*" element={<Navigate to="/articles" />} />
