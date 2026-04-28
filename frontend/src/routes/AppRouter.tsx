@@ -1,38 +1,54 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import ArticleDetail from "../pages/ArticleDetail";
 import CreateArticle from "../pages/CreateArticle";
-import ProtectedRoute from "./ProtectedRoute";
 import EditArticle from "../pages/EditArticle";
+import CategoryPage from "../pages/CategoryPage";
+
+import ProtectedRoute from "./ProtectedRoute";
 
 const AppRouter = () => {
     return (
         <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/articles/:slug" element={<ArticleDetail />} />
+            {/* REDIRECT ROOT */}
+            <Route path="/" element={<Navigate to="/articles" />} />
 
-        <Route
-            path="/create"
-            element={
-            <ProtectedRoute>
-                <CreateArticle />
-            </ProtectedRoute>
-            }
-        />
+            {/* AUTH */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
-        <Route
-            path="/edit/:id"
-            element={
-            <ProtectedRoute>
-                <EditArticle />
-            </ProtectedRoute>
-            }
-        />
+            {/* ARTICLES */}
+            <Route path="/articles" element={<Home />} />
+            <Route path="/articles/:slug" element={<ArticleDetail />} />
+
+            {/* CATEGORY FILTER */}
+            <Route path="/category/:slug" element={<CategoryPage />} />
+
+            {/* CREATE */}
+            <Route
+                path="/articles/create"
+                element={
+                    <ProtectedRoute>
+                        <CreateArticle />
+                    </ProtectedRoute>
+                }
+            />
+
+            {/* EDIT */}
+            <Route
+                path="/articles/edit/:id"
+                element={
+                    <ProtectedRoute>
+                        <EditArticle />
+                    </ProtectedRoute>
+                }
+            />
+
+            {/* fallback */}
+            <Route path="*" element={<Navigate to="/articles" />} />
         </Routes>
     );
 };
