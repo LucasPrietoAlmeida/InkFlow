@@ -9,7 +9,10 @@ export const getArticleBySlug = async (
     username: string,
     slug: string
 ) => {
-    const res = await api.get(`/${username}/${slug}`);
+    const res = await api.get(
+        `/articles/${username}/${slug}`
+    );
+
     return res.data;
 };
 
@@ -23,10 +26,7 @@ export const createArticle = async (data: any) => {
     return res.data;
 };
 
-export const updateArticle = async (
-    id: string,
-    data: any
-) => {
+export const updateArticle = async (id: string, data: any) => {
     const res = await api.put(`/articles/${id}`, data);
     return res.data;
 };
