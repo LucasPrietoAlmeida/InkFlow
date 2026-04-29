@@ -36,7 +36,7 @@ router.get("/id/:id", authMiddleware, async (req, res) => {
 });
 
 // Detalle artículo (público)
-router.get("/:slug", getArticleBySlug);
+router.get("/:username/:slug", getArticleBySlug);
 
 // Actualizar (privado)
 router.put("/:id", authMiddleware, updateArticle);

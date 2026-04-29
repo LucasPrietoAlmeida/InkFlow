@@ -1,5 +1,7 @@
 const articleService = require("../services/article.service");
 
+const prisma = require("../config/prisma");
+
 const createArticle = async (req, res) => {
     try {
         const article = await articleService.createArticle(req.body, req.user.userId);
@@ -28,10 +30,47 @@ const getArticles = async (req, res) => {
 
 const getArticleBySlug = async (req, res) => {
     try {
-        const article = await articleService.getArticleBySlug(req.params.slug);
-        res.json(article);
+        const { username, slug } = req.params;
+
+        // Buscar usuario
+        const user = await prisma.user.findUnique({
+            where: { username },
+        });
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        // Buscar artículo del usuario
+        const article = await prisma.article.findFirst({
+            where: {
+                slug,
+                authorId: user.id,
+                status: "published",
+            },
+            include: {
+                author: {
+                    select: {
+                        id: true,
+                        username: true,
+                        bio: true,
+                        avatar: true,
+                    },
+                },
+                categories: true,
+            },
+        });
+
+        // Validación
+        if (!article) {
+            return res.status(404).json({ error: "Article not found" });
+        }
+
+        return res.json(article);
+
     } catch (error) {
-        res.status(404).json({ error: error.message });
+        console.error(error);
+        return res.status(500).json({ error: "Internal server error" });
     }
 };
 
