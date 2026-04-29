@@ -16,7 +16,7 @@ type Article = {
 };
 
 const ArticleDetail = () => {
-    const { slug } = useParams();
+    const { username, slug } = useParams();
     const navigate = useNavigate();
     const { user } = useAuth();
 
@@ -25,56 +25,63 @@ const ArticleDetail = () => {
 
     useEffect(() => {
         const fetchArticle = async () => {
-        try {
-            if (!slug) return;
+            try {
+                if (!username || !slug) return;
 
-            const data = await getArticleBySlug(slug);
-            setArticle(data);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
+                const data = await getArticleBySlug(username, slug);
+                setArticle(data);
+            } catch (error) {
+                console.error(error);
+                setArticle(null);
+            } finally {
+                setLoading(false);
+            }
         };
 
         fetchArticle();
-    }, [slug]);
+    }, [username, slug]);
 
     const handleDelete = async () => {
         if (!article) return;
 
         try {
-        await deleteArticle(article.id);
-        navigate("/");
+            await deleteArticle(article.id);
+            navigate("/articles");
         } catch (error) {
-        console.error(error);
+            console.error(error);
         }
     };
 
     if (loading) return <h1>Cargando...</h1>;
-    if (!article) return <h1>Articulo no encontrado</h1>;
+    if (!article) return <h1>Artículo no encontrado</h1>;
 
     const isOwner = user?.id === article.author.id;
 
     return (
         <div>
-        <h1>{article.title}</h1>
+            <h1>{article.title}</h1>
 
-        <p>
-            <strong>By {article.author.username}</strong>
-        </p>
+            <p>
+                <strong>By {article.author.username}</strong>
+            </p>
 
-        {isOwner && (
-            <div>
-            <button onClick={() => navigate(`articles/edit/${article.id}`)}>
-                Editar
-            </button>
+            {isOwner && (
+                <div>
+                    <button
+                        onClick={() =>
+                            navigate(`/articles/edit/${article.id}`)
+                        }
+                    >
+                        Editar
+                    </button>
 
-            <button onClick={handleDelete}>Borrar</button>
-            </div>
-        )}
+                    <button onClick={handleDelete}>
+                        Borrar
+                    </button>
+                </div>
+            )}
 
-        <p>{article.content}</p>
+            <p>{article.content}</p>
         </div>
     );
 };

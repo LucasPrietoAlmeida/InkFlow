@@ -23,7 +23,7 @@ const AppRouter = () => {
             
             {/* ARTICLES */}
             <Route path="/articles" element={<Home />} />
-            <Route path="/articles/:slug" element={<ArticleDetail />} />
+            <Route path="/:username/:slug" element={<ArticleDetail />} />
 
             {/* CATEGORY FILTER */}
             <Route path="/category/:slug" element={<CategoryPage />} />

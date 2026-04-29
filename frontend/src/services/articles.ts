@@ -5,8 +5,11 @@ export const getArticles = async (page = 1, limit = 6) => {
     return res.data;
 };
 
-export const getArticleBySlug = async (slug: string) => {
-    const res = await api.get(`/articles/${slug}`);
+export const getArticleBySlug = async (
+    username: string,
+    slug: string
+) => {
+    const res = await api.get(`/${username}/${slug}`);
     return res.data;
 };
 
@@ -20,7 +23,10 @@ export const createArticle = async (data: any) => {
     return res.data;
 };
 
-export const updateArticle = async (id: string, data: any) => {
+export const updateArticle = async (
+    id: string,
+    data: any
+) => {
     const res = await api.put(`/articles/${id}`, data);
     return res.data;
 };
