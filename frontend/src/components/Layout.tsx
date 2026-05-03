@@ -4,9 +4,9 @@ const Layout = ({ children }: { children: ReactNode }) => {
     return (
         <div
         style={{
-            maxWidth: "800px",
+            maxWidth: "900px",
             margin: "0 auto",
-            padding: "20px",
+            padding: "32px 20px",
         }}
         >
         {children}

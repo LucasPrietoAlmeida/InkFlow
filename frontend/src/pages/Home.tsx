@@ -52,7 +52,14 @@ const Home = () => {
             <CategoryBar categories={categories} active={null} />
 
             {articles.length === 0 && (
-                <p>No hay artículos</p>
+                <p
+                    style={{
+                        color: "#666",
+                        marginTop: "30px",
+                    }}
+                >
+                    Todavía no hay artículos publicados
+                </p>
             )}
 
             {articles.map((article) => (
