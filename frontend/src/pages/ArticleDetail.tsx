@@ -34,6 +34,12 @@ const ArticleDetail = () => {
         if (!article) return;
 
         try {
+            const confirmed = window.confirm(
+                "¿Seguro que quieres borrar este artículo?"
+            );
+
+            if (!confirmed) return;
+
             await deleteArticle(article.id);
             navigate("/articles");
         } catch (error) {

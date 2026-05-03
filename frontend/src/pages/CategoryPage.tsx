@@ -23,6 +23,8 @@ const CategoryPage = () => {
 
                 setArticles(data.articles);
                 setPages(data.pagination.pages);
+
+                window.scrollTo({ top: 0, behavior: "smooth" });
             } catch (error) {
                 console.error(error);
             } finally {

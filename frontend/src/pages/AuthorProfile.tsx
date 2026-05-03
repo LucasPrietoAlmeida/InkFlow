@@ -23,6 +23,8 @@ const AuthorProfile = () => {
                 );
 
                 setData(res.data);
+
+                window.scrollTo({ top: 0, behavior: "smooth" });
             } catch (error) {
                 console.error(error);
                 setData(null);

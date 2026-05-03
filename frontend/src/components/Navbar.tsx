@@ -33,7 +33,16 @@ const Navbar = () => {
                 </button>
                 </Link>
 
-                <span>{user.username}</span>
+                <Link
+                to={`/${user.username}`}
+                style={{
+                    textDecoration: "none",
+                    color: "black",
+                    fontWeight: "bold",
+                }}
+                >
+                    {user.username}
+                </Link>
 
                 <button onClick={logout}>Cerrar Sesión</button>
             </>
