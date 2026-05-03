@@ -33,13 +33,13 @@ const ArticleDetail = () => {
     const handleDelete = async () => {
         if (!article) return;
 
+        const confirmed = window.confirm(
+            "¿Seguro que quieres borrar este artículo?"
+        );
+
+        if (!confirmed) return;
+
         try {
-            const confirmed = window.confirm(
-                "¿Seguro que quieres borrar este artículo?"
-            );
-
-            if (!confirmed) return;
-
             await deleteArticle(article.id);
             navigate("/articles");
         } catch (error) {
@@ -47,25 +47,46 @@ const ArticleDetail = () => {
         }
     };
 
-    if (loading) return <h1>Cargando...</h1>;
+    if (loading)
+        return (
+            <div style={{ textAlign: "center", marginTop: "40px" }}>
+                Cargando artículo...
+            </div>
+        );
+
     if (!article) return <h1>Artículo no encontrado</h1>;
 
     const isOwner = user?.id === article.author.id;
 
     return (
-        <div>
-            <h1>{article.title}</h1>
+        <div
+            style={{
+                maxWidth: "800px",
+                margin: "0 auto",
+                padding: "30px 20px",
+            }}
+        >
+            <h1 style={{ marginBottom: "10px" }}>
+                {article.title}
+            </h1>
 
-            <p>
-                <strong>By {article.author.username}</strong>
+            <p style={{ color: "#999", marginBottom: "20px" }}>
+                {new Date(article.createdAt).toLocaleDateString()}
+            </p>
+
+            <p style={{ color: "#666", marginBottom: "20px" }}>
+                <strong>
+                    By {article.author.username}
+                </strong>
             </p>
 
             {isOwner && (
-                <div>
+                <div style={{ marginBottom: "20px" }}>
                     <button
                         onClick={() =>
                             navigate(`/articles/edit/${article.id}`)
                         }
+                        style={{ marginRight: "10px" }}
                     >
                         Editar
                     </button>
@@ -76,7 +97,16 @@ const ArticleDetail = () => {
                 </div>
             )}
 
-            <p>{article.content}</p>
+            <div
+                style={{
+                    lineHeight: "1.7",
+                    fontSize: "16px",
+                    color: "#333",
+                    whiteSpace: "pre-wrap",
+                }}
+            >
+                {article.content}
+            </div>
         </div>
     );
 };
