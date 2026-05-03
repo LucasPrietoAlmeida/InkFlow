@@ -5,23 +5,8 @@ import ArticleCard from "../components/ArticleCard";
 import Layout from "../components/Layout";
 import Pagination from "../components/Pagination";
 import CategoryBar from "../components/CategoryBar";
-
-type Article = {
-    id: string;
-    title: string;
-    slug: string;
-    intro?: string;
-    createdAt: string;
-    author?: {
-        username: string;
-    };
-};
-
-type Category = {
-    id: string;
-    name: string;
-    slug: string;
-};
+import type { Article } from "../types/article";
+import type { Category } from "../types/category";
 
 const Home = () => {
     const [articles, setArticles] = useState<Article[]>([]);

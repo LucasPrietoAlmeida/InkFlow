@@ -4,12 +4,7 @@ import { getCategories } from "../services/categories";
 import { useNavigate } from "react-router-dom";
 import ErrorMessage from "../components/ErrorMessage";
 import Layout from "../components/Layout";
-
-type Category = {
-    id: string;
-    name: string;
-    slug: string;
-};
+import type { Category } from "../types/category";
 
 const CreateArticle = () => {
     const navigate = useNavigate();
@@ -83,7 +78,7 @@ const CreateArticle = () => {
                 categories: form.categories,
             });
 
-            navigate(`/articles/${article.slug}`);
+        navigate(`/${article.author.username}/${article.slug}`);
         } catch (err: any) {
             setError(err.message);
         } finally {

@@ -3,12 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getArticleById, updateArticle } from "../services/articles";
 import { getCategories } from "../services/categories";
 import ErrorMessage from "../components/ErrorMessage";
-
-type Category = {
-    id: string;
-    name: string;
-    slug: string;
-};
+import type { Category } from "../types/category";
 
 const EditArticle = () => {
     const { id } = useParams();
@@ -84,7 +79,7 @@ const EditArticle = () => {
 
         try {
             const article = await updateArticle(id!, form);
-            navigate(`/articles/${article.slug}`);
+            navigate(`/${article.author.username}/${article.slug}`);
         } catch (err: any) {
             setError(err.message);
         }

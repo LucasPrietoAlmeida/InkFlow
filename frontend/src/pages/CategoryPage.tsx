@@ -4,17 +4,7 @@ import { getArticlesByCategory } from "../services/categories";
 import ArticleCard from "../components/ArticleCard";
 import Layout from "../components/Layout";
 import Pagination from "../components/Pagination";
-
-type Article = {
-    id: string;
-    title: string;
-    slug: string;
-    intro?: string;
-    createdAt: string;
-    author?: {
-        username: string;
-    };
-};
+import type { Article } from "../types/article";
 
 const CategoryPage = () => {
     const { slug } = useParams();

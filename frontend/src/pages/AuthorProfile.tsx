@@ -4,30 +4,7 @@ import Layout from "../components/Layout";
 import ArticleCard from "../components/ArticleCard";
 import api from "../services/api";
 import Pagination from "../components/Pagination";
-
-type Article = {
-    id: string;
-    title: string;
-    slug: string;
-    intro?: string;
-    createdAt: string;
-    author?: {
-        username: string;
-    };
-};
-
-type Profile = {
-    username: string;
-    bio?: string;
-    avatar?: string;
-    articles: Article[];
-    pagination: {
-        page: number;
-        limit: number;
-        total: number;
-        pages: number;
-    };
-};
+import type { Profile } from "../types/profile";
 
 const AuthorProfile = () => {
     const { username } = useParams();

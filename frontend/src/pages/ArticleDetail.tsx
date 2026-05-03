@@ -2,18 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getArticleBySlug, deleteArticle } from "../services/articles";
 import { useAuth } from "../context/AuthContext";
-
-type Article = {
-    id: string;
-    title: string;
-    content: string;
-    intro?: string;
-    createdAt: string;
-    author: {
-        id: string;
-        username: string;
-    };
-};
+import type { Article } from "../types/article";
 
 const ArticleDetail = () => {
     const { username, slug } = useParams();

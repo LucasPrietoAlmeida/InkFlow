@@ -1,15 +1,5 @@
 import { Link } from "react-router-dom";
-
-type Article = {
-    id: string;
-    title: string;
-    slug: string;
-    intro?: string;
-    createdAt: string;
-    author: {
-        username: string;
-    };
-};
+import type { Article } from "../types/article";
 
 const ArticleCard = ({ article }: { article: Article }) => {
     return (
