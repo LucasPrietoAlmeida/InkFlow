@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import Navbar from "./Navbar";
 
 const Layout = ({ children }: { children: ReactNode }) => {
     return (
@@ -10,7 +9,6 @@ const Layout = ({ children }: { children: ReactNode }) => {
             padding: "20px",
         }}
         >
-            <Navbar></Navbar>
         {children}
         </div>
     );
