@@ -19,6 +19,8 @@ model User {
   createdAt DateTime @default(now())
 
   articles Article[]
+
+  comments Comment[]
 }
 
 model Article {
@@ -37,6 +39,8 @@ model Article {
   author   User @relation(fields: [authorId], references: [id])
 
   categories Category[]
+
+  comments Comment[]
 }
 
 model Category {
@@ -45,4 +49,16 @@ model Category {
   slug     String   @unique
 
   articles Article[]
+}
+
+model Comment {
+    id        String   @id @default(uuid())
+    content   String
+    createdAt DateTime @default(now())
+
+    articleId String
+    article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+    authorId  String
+    author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
 }

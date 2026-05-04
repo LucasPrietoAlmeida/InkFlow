@@ -11,6 +11,8 @@ const categoryRoutes = require("./routes/category.routes");
 
 const userRoutes = require("./routes/user.routes");
 
+const commentRoutes = require("./routes/comment.routes");
+
 const app = express();
 
 // Middlewares
@@ -52,6 +54,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/articles", articleRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/comments", commentRoutes);
 
 // Test Ruta protegida 
 app.get("/api/private", authMiddleware, (req, res) => {

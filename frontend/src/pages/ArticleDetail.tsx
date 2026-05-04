@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getArticleBySlug, deleteArticle } from "../services/articles";
 import { useAuth } from "../context/AuthContext";
+import Comments from "../components/Comments";
 import type { Article } from "../types/article";
 import toast from "react-hot-toast";
 
@@ -119,6 +120,7 @@ const ArticleDetail = () => {
             )}
 
             <p>{article.content}</p>
+            <Comments articleId={article.id} />
         </div>
     );
 };
