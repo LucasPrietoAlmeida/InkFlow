@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import logo from "../assets/LogoInkflow.png";
 
 const Navbar = () => {
     const { user, logout } = useAuth();
@@ -32,7 +33,14 @@ const Navbar = () => {
                         fontWeight: "bold",
                     }}
                 >
-                    <img src="../assets/vite.svg" alt="Logo Inkflow" />
+                    <img 
+                        src={logo} 
+                        alt="Logo Inkflow"
+                        style={{
+                            height: "42px",
+                            display: "block"
+                        }}
+                        />
                 </Link>
 
                 {user && (
