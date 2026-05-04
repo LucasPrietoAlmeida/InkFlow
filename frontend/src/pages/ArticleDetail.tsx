@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getArticleBySlug, deleteArticle } from "../services/articles";
 import { useAuth } from "../context/AuthContext";
 import type { Article } from "../types/article";
+import toast from "react-hot-toast";
 
 const ArticleDetail = () => {
     const { username, slug } = useParams();
@@ -33,80 +34,91 @@ const ArticleDetail = () => {
     const handleDelete = async () => {
         if (!article) return;
 
-        const confirmed = window.confirm(
+        const confirmDelete = window.confirm(
             "¿Seguro que quieres borrar este artículo?"
         );
 
-        if (!confirmed) return;
+        if (!confirmDelete) return;
 
         try {
             await deleteArticle(article.id);
+
+            toast.success("Artículo eliminado");
+
             navigate("/articles");
         } catch (error) {
+            toast.error("Error al eliminar el artículo");
             console.error(error);
         }
     };
 
-    if (loading)
-        return (
-            <div style={{ textAlign: "center", marginTop: "40px" }}>
-                Cargando artículo...
-            </div>
-        );
-
+    if (loading) return <h1>Cargando...</h1>;
     if (!article) return <h1>Artículo no encontrado</h1>;
 
     const isOwner = user?.id === article.author.id;
 
     return (
-        <div
-            style={{
-                maxWidth: "800px",
-                margin: "0 auto",
-                padding: "30px 20px",
-            }}
-        >
-            <h1 style={{ marginBottom: "10px" }}>
-                {article.title}
-            </h1>
+        <div>
+            <h1>{article.title}</h1>
 
-            <p style={{ color: "#999", marginBottom: "20px" }}>
-                {new Date(article.createdAt).toLocaleDateString()}
-            </p>
-
-            <p style={{ color: "#666", marginBottom: "20px" }}>
-                <strong>
-                    By {article.author.username}
-                </strong>
+            <p>
+                <strong>By {article.author.username}</strong>
             </p>
 
             {isOwner && (
-                <div style={{ marginBottom: "20px" }}>
+                <div
+                    style={{
+                        display: "flex",
+                        gap: "10px",
+                        margin: "20px 0",
+                    }}
+                >
                     <button
                         onClick={() =>
                             navigate(`/articles/edit/${article.id}`)
                         }
-                        style={{ marginRight: "10px" }}
+                        style={{
+                            padding: "8px 14px",
+                            borderRadius: "6px",
+                            border: "1px solid #ddd",
+                            background: "#f5f5f5",
+                            cursor: "pointer",
+                            transition: "0.2s",
+                        }}
+                        onMouseOver={(e) =>
+                            (e.currentTarget.style.background = "#eaeaea")
+                        }
+                        onMouseOut={(e) =>
+                            (e.currentTarget.style.background = "#f5f5f5")
+                        }
                     >
                         Editar
                     </button>
 
-                    <button onClick={handleDelete}>
+                    <button
+                        onClick={handleDelete}
+                        style={{
+                            padding: "8px 14px",
+                            borderRadius: "6px",
+                            border: "1px solid #ffdddd",
+                            background: "#ffe5e5",
+                            color: "#b00020",
+                            cursor: "pointer",
+                            transition: "0.2s",
+                        }}
+                        onMouseOver={(e) =>
+                            (e.currentTarget.style.background = "#ffd6d6")
+                        }
+                        onMouseOut={(e) =>
+                            (e.currentTarget.style.background = "#ffe5e5")
+                        }
+                    >
                         Borrar
                     </button>
                 </div>
             )}
 
-            <div
-                style={{
-                    lineHeight: "1.7",
-                    fontSize: "16px",
-                    color: "#333",
-                    whiteSpace: "pre-wrap",
-                }}
-            >
-                {article.content}
-            </div>
+            <p>{article.content}</p>
         </div>
     );
 };

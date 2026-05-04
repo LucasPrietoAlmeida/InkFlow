@@ -37,22 +37,33 @@ const Navbar = () => {
                         src={logo} 
                         alt="Logo Inkflow"
                         style={{
-                            height: "42px",
+                            height: "63px",
                             display: "block"
                         }}
                         />
                 </Link>
 
-                {user && (
-                    <Link
-                        to="/articles/create"
-                        style={{
-                            textDecoration: "none",
-                            color: "#333",
-                            fontSize: "14px",
-                        }}
-                    >
-                        Crear artículo
+  {user && (
+                    <Link to="/articles/create">
+                        <button
+                            style={{
+                                padding: "8px 14px",
+                                borderRadius: "8px",
+                                border: "1px solid #ddd",
+                                background: "#111",
+                                color: "white",
+                                cursor: "pointer",
+                                transition: "0.2s",
+                            }}
+                            onMouseOver={(e) =>
+                                (e.currentTarget.style.opacity = "0.85")
+                            }
+                            onMouseOut={(e) =>
+                                (e.currentTarget.style.opacity = "1")
+                            }
+                        >
+                            + Crear artículo
+                        </button>
                     </Link>
                 )}
             </div>
@@ -86,23 +97,10 @@ const Navbar = () => {
                     </>
                 ) : (
                     <>
-                        <Link
-                            to="/login"
-                            style={{
-                                textDecoration: "none",
-                                color: "#333",
-                            }}
-                        >
+                        <Link to="/login" style={{ color: "#333" }}>
                             Login
                         </Link>
-
-                        <Link
-                            to="/register"
-                            style={{
-                                textDecoration: "none",
-                                color: "#333",
-                            }}
-                        >
+                        <Link to="/register" style={{ color: "#333" }}>
                             Register
                         </Link>
                     </>

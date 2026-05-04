@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getArticleById, updateArticle } from "../services/articles";
 import { getCategories } from "../services/categories";
 import ErrorMessage from "../components/ErrorMessage";
+import toast from "react-hot-toast";
 import type { Category } from "../types/category";
 
 const EditArticle = () => {
@@ -79,77 +80,181 @@ const EditArticle = () => {
 
         try {
             const article = await updateArticle(id!, form);
-            navigate(`/${article.author.username}/${article.slug}`);
+
+            toast.success("Artículo actualizado correctamente");
+
+            navigate(`/articles/${article.slug}`);
         } catch (err: any) {
+            toast.error("Error al actualizar el artículo");
             setError(err.message);
         }
     };
 
-    if (loading) {
-        return <p>Cargando...</p>;
-    }
+    if (loading) return <p>Cargando editor...</p>;
 
     return (
-        <div>
-            <h1>Editar artículo</h1>
+        <div
+            style={{
+                maxWidth: "900px",
+                margin: "0 auto",
+                padding: "20px",
+            }}
+        >
+            <h1 style={{ marginBottom: "24px" }}>Editar artículo</h1>
 
             {error && <ErrorMessage message={error} />}
 
-            <form onSubmit={handleSubmit}>
+            <form
+                onSubmit={handleSubmit}
+                style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "16px",
+                }}
+            >
+                {/* TITLE */}
                 <input
                     name="title"
-                    placeholder="Title"
+                    placeholder="Título del artículo"
                     value={form.title}
                     onChange={handleChange}
+                    style={{
+                        padding: "14px",
+                        borderRadius: "8px",
+                        border: "1px solid #ddd",
+                        fontSize: "16px",
+                        fontWeight: "500",
+                    }}
                 />
 
+                {/* INTRO */}
                 <input
                     name="intro"
-                    placeholder="Intro"
+                    placeholder="Introducción (opcional)"
                     value={form.intro}
                     onChange={handleChange}
+                    style={{
+                        padding: "12px",
+                        borderRadius: "8px",
+                        border: "1px solid #ddd",
+                    }}
                 />
 
+                {/* CONTENT */}
                 <textarea
                     name="content"
-                    rows={10}
+                    rows={12}
+                    placeholder="Escribe tu contenido aquí..."
                     value={form.content}
                     onChange={handleChange}
+                    style={{
+                        padding: "14px",
+                        borderRadius: "8px",
+                        border: "1px solid #ddd",
+                        resize: "vertical",
+                        fontSize: "14px",
+                        lineHeight: "1.5",
+                    }}
                 />
 
-                <select
-                    name="status"
-                    value={form.status}
-                    onChange={handleChange}
-                >
-                    <option value="draft">Draft</option>
-                    <option value="published">Published</option>
-                </select>
-
-                <h3>Categorías</h3>
-
-                {categories.map((category) => (
-                    <label
-                        key={category.id}
+                {/* STATUS */}
+                <div>
+                    <label style={{ fontWeight: "500" }}>Estado</label>
+                    <select
+                        name="status"
+                        value={form.status}
+                        onChange={handleChange}
                         style={{
-                            display: "block",
-                            marginBottom: "8px",
+                            marginTop: "6px",
+                            padding: "10px",
+                            borderRadius: "8px",
+                            border: "1px solid #ddd",
+                            width: "200px",
                         }}
                     >
-                        <input
-                            type="checkbox"
-                            checked={form.categories.includes(category.id)}
-                            onChange={() =>
-                                handleCategoryChange(category.id)
-                            }
-                        />{" "}
-                        {category.name}
-                    </label>
-                ))}
+                        <option value="draft">Borrador</option>
+                        <option value="published">Publicado</option>
+                    </select>
+                </div>
 
-                <button type="submit">
-                    Guardar cambios
-                </button>
+                {/* CATEGORIES */}
+                <div>
+                    <h3 style={{ marginBottom: "10px" }}>Categorías</h3>
+
+                    <div
+                        style={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: "10px",
+                        }}
+                    >
+                        {categories.map((category) => {
+                            const active = form.categories.includes(
+                                category.id
+                            );
+
+                            return (
+                                <button
+                                    type="button"
+                                    key={category.id}
+                                    onClick={() =>
+                                        handleCategoryChange(category.id)
+                                    }
+                                    style={{
+                                        padding: "6px 12px",
+                                        borderRadius: "999px",
+                                        border: "1px solid #ddd",
+                                        background: active
+                                            ? "#111"
+                                            : "white",
+                                        color: active ? "white" : "#333",
+                                        cursor: "pointer",
+                                        transition: "0.2s",
+                                    }}
+                                >
+                                    {category.name}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* ACTIONS */}
+                <div
+                    style={{
+                        display: "flex",
+                        gap: "12px",
+                        marginTop: "10px",
+                    }}
+                >
+                    <button
+                        type="submit"
+                        style={{
+                            padding: "10px 16px",
+                            borderRadius: "8px",
+                            border: "none",
+                            background: "#111",
+                            color: "white",
+                            cursor: "pointer",
+                        }}
+                    >
+                        Guardar cambios
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => navigate(-1)}
+                        style={{
+                            padding: "10px 16px",
+                            borderRadius: "8px",
+                            border: "1px solid #ddd",
+                            background: "white",
+                            cursor: "pointer",
+                        }}
+                    >
+                        Cancelar
+                    </button>
+                </div>
             </form>
         </div>
     );
