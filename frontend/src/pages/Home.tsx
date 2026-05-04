@@ -30,7 +30,10 @@ const Home = () => {
                 setPages(articlesData.pagination.pages);
                 setCategories(categoriesData);
 
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth",
+                });
             } catch (error) {
                 console.error(error);
             } finally {
@@ -41,17 +44,45 @@ const Home = () => {
         fetchData();
     }, [page]);
 
-    if (loading) return <p>Cargando artículos...</p>;
+    if (loading) {
+        return (
+            <Layout>
+                <p
+                    style={{
+                        textAlign: "center",
+                        marginTop: "50px",
+                        color: "#666",
+                    }}
+                >
+                    Cargando artículos...
+                </p>
+            </Layout>
+        );
+    }
 
     return (
         <Layout>
-            <h1 style={{ marginBottom: "10px" }}>
+            <h1
+                style={{
+                    marginBottom: "10px",
+                    fontSize: "34px",
+                }}
+            >
                 Últimos artículos
             </h1>
 
+            <p
+                style={{
+                    color: "#666",
+                    marginBottom: "24px",
+                }}
+            >
+                Descubre publicaciones de la comunidad
+            </p>
+
             <CategoryBar categories={categories} active={null} />
 
-            {articles.length === 0 && (
+            {articles.length === 0 ? (
                 <p
                     style={{
                         color: "#666",
@@ -60,11 +91,14 @@ const Home = () => {
                 >
                     Todavía no hay artículos publicados
                 </p>
+            ) : (
+                articles.map((article) => (
+                    <ArticleCard
+                        key={article.id}
+                        article={article}
+                    />
+                ))
             )}
-
-            {articles.map((article) => (
-                <ArticleCard key={article.id} article={article} />
-            ))}
 
             <Pagination
                 page={page}
