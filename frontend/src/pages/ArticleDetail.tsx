@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { getArticleBySlug, deleteArticle } from "../services/articles";
 import { useAuth } from "../context/AuthContext";
+import CommentSection from "../components/CommentSection";
 import Layout from "../components/Layout";
 import toast from "react-hot-toast";
 
@@ -245,6 +246,7 @@ const ArticleDetail = () => {
                 >
                     {article.content}
                 </div>
+                <CommentSection articleId={article.id} />
             </article>
         </Layout>
     );
