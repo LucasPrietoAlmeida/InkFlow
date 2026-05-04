@@ -32,7 +32,7 @@ const Navbar = () => {
                         fontWeight: "bold",
                     }}
                 >
-                    <img src="../assets/LogoInkflow.png" alt="Logo Inkflow" />
+                    <img src="../assets/vite.svg" alt="Logo Inkflow" />
                 </Link>
 
                 {user && (

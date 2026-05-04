@@ -24,7 +24,10 @@ const AuthorProfile = () => {
 
                 setData(res.data);
 
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth",
+                });
             } catch (error) {
                 console.error(error);
                 setData(null);
@@ -39,7 +42,15 @@ const AuthorProfile = () => {
     if (loading) {
         return (
             <Layout>
-                <p>Cargando perfil...</p>
+                <p
+                    style={{
+                        textAlign: "center",
+                        marginTop: "40px",
+                        color: "#666",
+                    }}
+                >
+                    Cargando perfil...
+                </p>
             </Layout>
         );
     }
@@ -47,54 +58,98 @@ const AuthorProfile = () => {
     if (!data) {
         return (
             <Layout>
-                <p>Usuario no encontrado</p>
+                <p
+                    style={{
+                        textAlign: "center",
+                        marginTop: "40px",
+                    }}
+                >
+                    Usuario no encontrado
+                </p>
             </Layout>
         );
     }
 
     return (
         <Layout>
+            {/* HERO */}
             <div
                 style={{
                     display: "flex",
                     alignItems: "center",
-                    gap: "16px",
-                    marginBottom: "24px",
+                    gap: "24px",
+                    marginBottom: "40px",
+                    paddingBottom: "30px",
+                    borderBottom: "1px solid #eee",
                 }}
             >
                 <img
                     src={
                         data.avatar ||
-                        "https://via.placeholder.com/80"
+                        "https://ui-avatars.com/api/?name=" +
+                            data.username +
+                            "&background=111&color=fff&size=160"
                     }
-                    alt="avatar"
+                    alt={data.username}
                     style={{
-                        width: "80px",
-                        height: "80px",
+                        width: "90px",
+                        height: "90px",
                         borderRadius: "50%",
                         objectFit: "cover",
+                        flexShrink: 0,
                     }}
                 />
 
                 <div>
-                    <h1>{data.username}</h1>
-                    {data.bio && (
-                        <p style={{ color: "#666" }}>{data.bio}</p>
-                    )}
+                    <h1
+                        style={{
+                            marginBottom: "8px",
+                            fontSize: "32px",
+                        }}
+                    >
+                        {data.username}
+                    </h1>
+
+                    <p
+                        style={{
+                            color: "#666",
+                            lineHeight: "1.6",
+                            marginBottom: "8px",
+                        }}
+                    >
+                        {data.bio || "Todavía no ha añadido una biografía"}
+                    </p>
+
+                    <small style={{ color: "#999" }}>
+                        {data.pagination.total} artículos publicados
+                    </small>
                 </div>
             </div>
 
-            <h2 style={{ marginBottom: "16px" }}>
+            {/* ARTICLES */}
+            <h2
+                style={{
+                    marginBottom: "24px",
+                    fontSize: "24px",
+                }}
+            >
                 Artículos publicados
             </h2>
 
             {data.articles.length === 0 ? (
-                <p>Este usuario aún no tiene artículos publicados</p>
+                <p style={{ color: "#666" }}>
+                    Este usuario aún no tiene artículos publicados
+                </p>
             ) : (
                 data.articles.map((article) => (
                     <ArticleCard
                         key={article.id}
-                        article={article}
+                        article={{
+                            ...article,
+                            author: {
+                                username: data.username,
+                            },
+                        }}
                     />
                 ))
             )}
