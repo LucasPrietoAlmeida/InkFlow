@@ -83,7 +83,7 @@ const EditArticle = () => {
 
             toast.success("Artículo actualizado correctamente");
 
-            navigate(`/articles/${article.slug}`);
+            navigate(`/${article.author.username}/${article.slug}`);
         } catch (err: any) {
             toast.error("Error al actualizar el artículo");
             setError(err.message);
@@ -112,7 +112,6 @@ const EditArticle = () => {
                     gap: "16px",
                 }}
             >
-                {/* TITLE */}
                 <input
                     name="title"
                     placeholder="Título del artículo"
@@ -127,7 +126,6 @@ const EditArticle = () => {
                     }}
                 />
 
-                {/* INTRO */}
                 <input
                     name="intro"
                     placeholder="Introducción (opcional)"
@@ -140,7 +138,6 @@ const EditArticle = () => {
                     }}
                 />
 
-                {/* CONTENT */}
                 <textarea
                     name="content"
                     rows={12}
@@ -157,7 +154,6 @@ const EditArticle = () => {
                     }}
                 />
 
-                {/* STATUS */}
                 <div>
                     <label style={{ fontWeight: "500" }}>Estado</label>
                     <select
@@ -177,7 +173,6 @@ const EditArticle = () => {
                     </select>
                 </div>
 
-                {/* CATEGORIES */}
                 <div>
                     <h3 style={{ marginBottom: "10px" }}>Categorías</h3>
 
@@ -219,7 +214,6 @@ const EditArticle = () => {
                     </div>
                 </div>
 
-                {/* ACTIONS */}
                 <div
                     style={{
                         display: "flex",
