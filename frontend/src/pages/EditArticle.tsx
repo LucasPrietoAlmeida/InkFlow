@@ -16,6 +16,7 @@ const EditArticle = () => {
         title: "",
         intro: "",
         content: "",
+        coverImage: "",
         status: "draft",
         categories: [] as string[],
     });
@@ -37,6 +38,7 @@ const EditArticle = () => {
                     title: article.title,
                     intro: article.intro || "",
                     content: article.content,
+                    coverImage: article.coverImage || "",
                     status: article.status,
                     categories: article.categories.map((c: Category) => c.id),
                 });
@@ -151,6 +153,18 @@ const EditArticle = () => {
                         resize: "vertical",
                         fontSize: "14px",
                         lineHeight: "1.5",
+                    }}
+                />
+
+                <input
+                    name="coverImage"
+                    placeholder="URL de imagen"
+                    value={form.coverImage}
+                    onChange={handleChange}
+                    style={{
+                        padding: "12px",
+                        borderRadius: "8px",
+                        border: "1px solid #ddd",
                     }}
                 />
 

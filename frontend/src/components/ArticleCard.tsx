@@ -21,6 +21,21 @@ const ArticleCard = ({ article }: { article: Article }) => {
                     cursor: "pointer",
                 }}
             >
+
+                {article.coverImage && (
+                    <img
+                        src={article.coverImage}
+                        alt={article.title}
+                        style={{
+                            width: "100%",
+                            height: "180px",
+                            objectFit: "cover",
+                            borderRadius: "8px",
+                            marginBottom: "12px",
+                        }}
+                    />
+                )}
+
                 <h2 style={{ marginBottom: "8px" }}>
                     {article.title}
                 </h2>

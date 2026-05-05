@@ -5,24 +5,9 @@ import { useAuth } from "../context/AuthContext";
 import CommentSection from "../components/CommentSection";
 import Layout from "../components/Layout";
 import toast from "react-hot-toast";
+import type { Article } from "../types/article";
 
-type Article = {
-    id: string;
-    title: string;
-    content: string;
-    intro?: string;
-    createdAt: string;
-    categories?: {
-        id: string;
-        name: string;
-        slug: string;
-    }[];
-    author: {
-        id: string;
-        username: string;
-        bio?: string;
-    };
-};
+
 
 const ArticleDetail = () => {
     const { username, slug } = useParams();
@@ -97,6 +82,21 @@ const ArticleDetail = () => {
                     paddingBottom: "80px",
                 }}
             >
+
+                {article.coverImage && (
+                    <img
+                        src={article.coverImage}
+                        alt={article.title}
+                        style={{
+                            width: "100%",
+                            maxHeight: "420px",
+                            objectFit: "cover",
+                            borderRadius: "12px",
+                            marginBottom: "30px",
+                        }}
+                    />
+                )}
+            
                 <h1
                     style={{
                         fontSize: "44px",
@@ -107,7 +107,51 @@ const ArticleDetail = () => {
                     {article.title}
                 </h1>
 
-                                <div
+                {article.intro && (
+                    <p
+                        style={{
+                            fontSize: "22px",
+                            lineHeight: 1.6,
+                            color: "#666",
+                            marginBottom: "30px",
+                        }}
+                    >
+                        {article.intro}
+                    </p>
+                )}
+
+
+
+                {article.categories &&
+                    article.categories.length > 0 && (
+                        <div
+                            style={{
+                                display: "flex",
+                                gap: "10px",
+                                flexWrap: "wrap",
+                                marginBottom: "40px",
+                            }}
+                        >
+                            {article.categories.map((cat) => (
+                                <Link
+                                    key={cat.id}
+                                    to={`/category/${cat.slug}`}
+                                    style={{
+                                        textDecoration: "none",
+                                        padding: "6px 14px",
+                                        borderRadius: "999px",
+                                        background: "#f5f5f5",
+                                        color: "#333",
+                                        fontSize: "14px",
+                                    }}
+                                >
+                                    {cat.name}
+                                </Link>
+                            ))}
+                        </div>
+                    )}
+
+                <div
                     style={{
                         display: "flex",
                         justifyContent: "space-between",
@@ -191,50 +235,6 @@ const ArticleDetail = () => {
                         </div>
                     )}
                 </div>
-
-                {article.intro && (
-                    <p
-                        style={{
-                            fontSize: "22px",
-                            lineHeight: 1.6,
-                            color: "#666",
-                            marginBottom: "30px",
-                        }}
-                    >
-                        {article.intro}
-                    </p>
-                )}
-
-
-
-                {article.categories &&
-                    article.categories.length > 0 && (
-                        <div
-                            style={{
-                                display: "flex",
-                                gap: "10px",
-                                flexWrap: "wrap",
-                                marginBottom: "40px",
-                            }}
-                        >
-                            {article.categories.map((cat) => (
-                                <Link
-                                    key={cat.id}
-                                    to={`/category/${cat.slug}`}
-                                    style={{
-                                        textDecoration: "none",
-                                        padding: "6px 14px",
-                                        borderRadius: "999px",
-                                        background: "#f5f5f5",
-                                        color: "#333",
-                                        fontSize: "14px",
-                                    }}
-                                >
-                                    {cat.name}
-                                </Link>
-                            ))}
-                        </div>
-                    )}
 
                 <div
                     style={{

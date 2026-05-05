@@ -15,6 +15,7 @@ const CreateArticle = () => {
         title: "",
         intro: "",
         content: "",
+        coverImage: "",
         status: "draft",
         categories: [] as string[],
     });
@@ -147,6 +148,18 @@ const CreateArticle = () => {
                     }}
                 />
 
+                <input
+                    name="coverImage"
+                    placeholder="URL de imagen (portada)"
+                    value={form.coverImage}
+                    onChange={handleChange}
+                    style={{
+                        padding: "12px",
+                        borderRadius: "8px",
+                        border: "1px solid #ddd",
+                    }}
+                />
+
                 <select
                     name="status"
                     value={form.status}
@@ -157,8 +170,8 @@ const CreateArticle = () => {
                         border: "1px solid #ddd",
                     }}
                 >
-                    <option value="draft">Borrador</option>
                     <option value="published">Publicado</option>
+                    <option value="draft">Borrador</option>
                 </select>
 
                 <div>
