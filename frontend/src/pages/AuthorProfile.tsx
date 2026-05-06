@@ -72,7 +72,6 @@ const AuthorProfile = () => {
 
     return (
         <Layout>
-            {/* HERO */}
             <div
                 style={{
                     display: "flex",
@@ -126,7 +125,6 @@ const AuthorProfile = () => {
                 </div>
             </div>
 
-            {/* ARTICLES */}
             <h2
                 style={{
                     marginBottom: "24px",

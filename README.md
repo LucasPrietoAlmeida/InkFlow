@@ -47,6 +47,7 @@ El objetivo del proyecto fue desarrollar una aplicación completa de principio a
 * Publicar artículo
 * Generación automática de slug
 * Validación de propiedad del autor
+* Soporte de imagen URL (coverImage)
 
 ### Categorías
 
@@ -64,8 +65,8 @@ El objetivo del proyecto fue desarrollar una aplicación completa de principio a
 ### Comentarios
 
 * Añadir comentarios en artículos
-* Eliminar comentarios propios
-* Ordenación por fecha de publicación
+* Visualización de comentarios por artículo
+* Relación usuario → artículo → comentarios
 
 ### UX / UI
 
@@ -221,16 +222,27 @@ Configurar la baseURL de la API en services/api.ts
 
 Con InkFlow he puesto en práctica:
 
-* Arquitectura Full Stack
-* Diseño de bases de datos relacionales
-* Desarrollo de APIs REST
-* Autenticación y autorización
+* Arquitectura Full Stack completa
+* Diseño de bases de datos relacionales con Prisma
+* Desarrollo de APIs REST con Express
+* Autenticación y autorización con JWT
 * Migraciones con Prisma
 * Despliegue cloud en AWS
 * Gestión de estado en frontend
 * Componentes reutilizables
-* Debugging en producción
+* Soporte de imágenes mediante URLs en artículos
 * Integración frontend + backend + base de datos
+
+## Mejoras futuras
+
+* Editor de texto enriquecido (Markdown)
+* Subida de imágenes real
+* Sistema de likes
+* Comentarios anidados
+* Búsqueda avanzada de artículos
+* Perfil de usuario editable con avatar
+* Panel de administración
+* Noticiaciones en tiempo real
 
 ---
 

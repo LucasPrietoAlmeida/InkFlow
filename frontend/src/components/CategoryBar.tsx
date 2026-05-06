@@ -32,7 +32,6 @@ const CategoryBar = ({ categories, active }: Props) => {
                 marginBottom: "20px",
             }}
         >
-            {/* ALL */}
             <button
                 onClick={() => handleSelect(null)}
                 style={{
@@ -45,7 +44,7 @@ const CategoryBar = ({ categories, active }: Props) => {
                     whiteSpace: "nowrap",
                 }}
             >
-                All
+                Todos
             </button>
 
             {categories.map((cat) => {

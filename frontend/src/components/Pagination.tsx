@@ -46,7 +46,7 @@ const Pagination = ({
                     }
                 }}
             >
-                ← Anterior
+                ←
             </button>
 
             <div
@@ -86,7 +86,7 @@ const Pagination = ({
                     }
                 }}
             >
-                Siguiente →
+                →
             </button>
         </div>
     );
